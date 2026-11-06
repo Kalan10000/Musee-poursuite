@@ -47,47 +47,30 @@
 
         let selectedPlayerIndex = null;
         let selectedTileId = null;
-        let gameData = { count: 5, colors: {} };
+        let gameData = { count: 5, colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' } };
 
         /**
-         * Check authentication & initialize setup
+         * Initialize App Data safely
          */
-        function checkAuth() {
-            const params = new URLSearchParams(window.location.search);
-            const queryCode = params.get('code') || params.get('key');
-            const storedAuth = localStorage.getItem('bg_helper_auth') === 'true';
-
-            if ((queryCode && queryCode.toUpperCase().startsWith('SM-MI1B')) || storedAuth) {
-                if (queryCode) {
-                    localStorage.setItem('bg_helper_auth', 'true');
-                    localStorage.setItem('bg_helper_auth_key', queryCode);
-                }
-                loadGameData();
-                renderPlayers();
-                return;
-            }
-
-            // Redirect to index authentication screen if unauthenticated
-            window.location.href = 'index.html';
+        function initApp() {
+            loadGameData();
+            renderPlayers();
         }
 
         /**
-         * Load player data from localStorage
+         * Load player data from localStorage or set defaults
          */
         function loadGameData() {
             const stored = localStorage.getItem('bg_helper_game_players');
             if (stored) {
                 try {
-                    gameData = JSON.parse(stored);
+                    const parsed = JSON.parse(stored);
+                    if (parsed && parsed.count) {
+                        gameData = parsed;
+                    }
                 } catch (e) {
-                    gameData = { count: 5, colors: {} };
+                    console.warn('Fallback to default setup');
                 }
-            } else {
-                // Default setup if direct navigation
-                gameData = {
-                    count: 5,
-                    colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' }
-                };
             }
         }
 
@@ -102,7 +85,7 @@
             const totalPlayers = gameData.count || 5;
 
             for (let i = 1; i <= totalPlayers; i++) {
-                const colorId = gameData.colors[i] || COLOR_OPTIONS[(i - 1) % COLOR_OPTIONS.length].id;
+                const colorId = (gameData.colors && gameData.colors[i]) || COLOR_OPTIONS[(i - 1) % COLOR_OPTIONS.length].id;
                 const colorObj = COLOR_OPTIONS.find(c => c.id === colorId) || COLOR_OPTIONS[0];
 
                 const btn = document.createElement('button');
@@ -127,7 +110,7 @@
         }
 
         /**
-         * Handle Player Selection - Opens the "Quelle case ?" screen section
+         * Handle Player Selection - Opens the "Quelle case ?" section
          */
         function selectPlayer(index, colorObj) {
             selectedPlayerIndex = index;
@@ -144,7 +127,7 @@
                 }
             });
 
-            // Update active player hint label in tile section
+            // Update active player hint label
             const label = document.getElementById('selectedPlayerLabel');
             if (label) {
                 label.textContent = `Joueur ${index} (${colorObj.name})`;
@@ -259,7 +242,7 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', checkAuth);
+        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </head>
 <body class="h-full bg-[#1D3842] text-slate-100 flex flex-col items-center justify-start p-3 sm:p-4 max-w-xl mx-auto">
