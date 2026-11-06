@@ -416,39 +416,39 @@
                     </div>
                 </button>
 
-                <!-- Option 5: 5 Joueurs (Extrémités légèrement rapprochées) -->
+                <!-- Option 5: 5 Joueurs (Extrémités rapprochées à x=11, sans rotation, et sprite du haut abaissé à y=-2.5) -->
                 <button onclick="selectPlayerCount(5)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md sm:col-span-2 lg:col-span-1">
-                    <div class="flex items-center justify-center min-h-[4rem] relative w-44">
-                        <!-- Extrême gauche (-translate-x-11 au lieu de -translate-x-14) -->
-                        <div class="w-8 h-8 flex items-center justify-center absolute -translate-x-11 -translate-y-0.5 -rotate-[35deg] transition group-hover:-translate-x-12">
+                    <div class="flex items-center justify-center min-h-[4rem] relative w-48">
+                        <!-- Extrême gauche (rapproché, sans rotation) -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute -translate-x-11 -translate-y-0.5 rotate-0 transition group-hover:-translate-x-12">
                             <img src="assets/BLAB.svg" alt="Sprite Violet" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <!-- Milieu gauche -->
-                        <div class="w-8 h-8 flex items-center justify-center absolute z-10 -translate-x-6 -translate-y-2.5 -rotate-15 transition group-hover:-translate-x-7 group-hover:-translate-y-3">
+                        <!-- Milieu gauche (-15deg de rotation) -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute z-10 -translate-x-6 -translate-y-2 -rotate-15 transition group-hover:-translate-x-7 group-hover:-translate-y-2.5">
                             <img src="assets/BLEB.svg" alt="Sprite Bleu" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <!-- Centre -->
-                        <div class="w-8 h-8 flex items-center justify-center absolute z-20 -translate-y-4 rotate-0 transition group-hover:-translate-y-5">
+                        <!-- Centre (abaissé un tout petit peu à -translate-y-2.5) -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute z-20 -translate-y-2.5 rotate-0 transition group-hover:-translate-y-3.5">
                             <img src="assets/BLIB.svg" alt="Sprite Vert" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <!-- Milieu droite -->
-                        <div class="w-8 h-8 flex items-center justify-center absolute z-10 translate-x-6 -translate-y-2.5 rotate-15 transition group-hover:translate-x-7 group-hover:-translate-y-3">
+                        <!-- Milieu droite (15deg de rotation) -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute z-10 translate-x-6 -translate-y-2 rotate-15 transition group-hover:translate-x-7 group-hover:-translate-y-2.5">
                             <img src="assets/BLOB.svg" alt="Sprite Rouge" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <!-- Extrême droite (translate-x-11 au lieu de translate-x-14) -->
-                        <div class="w-8 h-8 flex items-center justify-center absolute translate-x-11 -translate-y-0.5 rotate-[35deg] transition group-hover:translate-x-12">
+                        <!-- Extrême droite (rapproché, sans rotation) -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute translate-x-11 -translate-y-0.5 rotate-0 transition group-hover:translate-x-12">
                             <img src="assets/BLUB.svg" alt="Sprite Jaune" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
