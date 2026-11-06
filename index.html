@@ -1,1 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Game Helper</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+    <script>
+        /**
+         * Cross Placeholder Fallback for missing SVG sprites
+         */
+        function handleSpriteError(imgElem) {
+            imgElem.style.display = 'none';
+            const fallbackElem = imgElem.nextElementSibling;
+            if (fallbackElem && fallbackElem.classList.contains('fallback-cross')) {
+                fallbackElem.classList.remove('hidden');
+                fallbackElem.classList.add('flex');
+            }
+        }
 
+        // Available player colors setup with corresponding sprite fallback references
+        const COLOR_OPTIONS = [
+            { id: 'red', name: 'Rouge', class: 'bg-red-500', border: 'border-red-500', sprite: 'BLAB.svg' },
+            { id: 'blue', name: 'Bleu', class: 'bg-blue-500', border: 'border-blue-500', sprite: 'BLEB.svg' },
+            { id: 'green', name: 'Vert', class: 'bg-emerald-500', border: 'border-emerald-500', sprite: 'BLIB.svg' },
+            { id: 'yellow', name: 'Jaune', class: 'bg-amber-400', border: 'border-amber-400', sprite: 'BLOB.svg' },
+            { id: 'purple', name: 'Violet', class: 'bg-purple-500', border: 'border-purple-500', sprite: 'BLUB.svg' }
+        ];
+
+        let selectedPlayerCount = 0;
+        let playerColors = {};
+
+        /**
+         * Authentication Handler
+         */
+        function getAccessKey() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('key') || params.get('code') || localStorage.getItem('bg_helper_auth_key') || 'SM-MI1b';
+        }
+
+        function handleAuthSubmit(event) {
+            if (event) event.preventDefault();
+            const input = document.getElementById('codeInput');
+            const val = input.value.trim();
+
+            if (val.toUpperCase().startsWith('SM-MI1B')) {
+                localStorage.setItem('bg_helper_auth', 'true');
+                localStorage.setItem('bg_helper_auth_key', val);
+                showScreen('playerCountScreen');
+            } else {
+                document.getElementById('authError').classList.remove('hidden');
+                input.focus();
+            }
+        }
+
+        function checkAuth() {
+            const params = new URLSearchParams(window.location.search);
+            const queryCode = params.get('code') || params.get('key');
+            const isPlayRoute = window.location.pathname.endsWith('/play') || window.location.pathname.endsWith('/play.html');
+
+            if (queryCode && queryCode.toUpperCase().startsWith('SM-MI1B')) {
+                localStorage.setItem('bg_helper_auth', 'true');
+                localStorage.setItem('bg_helper_auth_key', queryCode);
+                if (isPlayRoute) {
+                    showScreen('gameCompanionScreen');
+                    renderPlayCompanionFromState();
+                    return;
+                }
+                showScreen('playerCountScreen');
+                return;
+            }
+
+            if (localStorage.getItem('bg_helper_auth') === 'true') {
+                if (isPlayRoute) {
+                    showScreen('gameCompanionScreen');
+                    renderPlayCompanionFromState();
+                    return;
+                }
+                showScreen('playerCountScreen');
+                return;
+            }
+
+            showScreen('authScreen');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
+            const target = document.getElementById(screenId);
+            if (target) target.classList.remove('hidden');
+        }
+
+        /**
+         * Player Count Selection Handler
+         */
+        function selectPlayerCount(count) {
+            selectedPlayerCount = count;
+            renderColorSelection();
+            showScreen('colorSelectionScreen');
+        }
+
+        /**
+         * Render Color Selection per player
+         */
+        function renderColorSelection() {
+            const container = document.getElementById('colorListContainer');
+            container.innerHTML = '';
+            playerColors = {};
+
+            for (let i = 1; i <= selectedPlayerCount; i++) {
+                const pCard = document.createElement('div');
+                pCard.className = "bg-slate-900 border border-slate-700/80 rounded-2xl p-4 sm:p-5 space-y-3";
+                
+                let colorsHTML = COLOR_OPTIONS.map(c => `
+                    <button type="button" 
+                        onclick="assignColor(${i}, '${c.id}')" 
+                        id="btn-p${i}-${c.id}"
+                        class="color-check-btn flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-800/60 hover:bg-slate-700/60 cursor-pointer text-left">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                                <img src="assets/${c.sprite}" alt="${c.name}" class="w-6 h-6 object-contain" onerror="handleSpriteError(this)">
+                                <div class="fallback-cross hidden absolute inset-0 bg-slate-950 items-center justify-center text-rose-500">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </div>
+                            </div>
+                            <span class="text-sm font-medium text-slate-200">${c.name}</span>
+                        </div>
+                        <i class="fa-solid fa-check text-slate-500 opacity-0 check-icon"></i>
+                    </button>
+                `).join('');
+
+                pCard.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span class="font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-user text-indigo-400"></i> Joueur ${i}
+                        </span>
+                        <span id="p${i}-selected-label" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400">
+                            Non sélectionné
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        ${colorsHTML}
+                    </div>
+                `;
+                container.appendChild(pCard);
+            }
+
+            validateColors();
+        }
+
+        /**
+         * Assign a color to a specific player
+         */
+        function assignColor(playerNum, colorId) {
+            playerColors[playerNum] = colorId;
+
+            COLOR_OPTIONS.forEach(c => {
+                const btn = document.getElementById(`btn-p${playerNum}-${c.id}`);
+                if (!btn) return;
+                const icon = btn.querySelector('.check-icon');
+                if (c.id === colorId) {
+                    btn.className = `color-check-btn flex items-center justify-between p-3 rounded-xl border-2 ${c.border} bg-slate-800 cursor-pointer text-left ring-1 ring-white/10`;
+                    if (icon) {
+                        icon.classList.remove('opacity-0', 'text-slate-500');
+                        icon.classList.add('text-indigo-400');
+                    }
+                } else {
+                    btn.className = `color-check-btn flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-800/60 hover:bg-slate-700/60 cursor-pointer text-left`;
+                    if (icon) {
+                        icon.classList.add('opacity-0', 'text-slate-500');
+                        icon.classList.remove('text-indigo-400');
+                    }
+                }
+            });
+
+            const label = document.getElementById(`p${playerNum}-selected-label`);
+            const cObj = COLOR_OPTIONS.find(c => c.id === colorId);
+            if (label && cObj) {
+                label.textContent = cObj.name;
+                label.className = `text-xs font-semibold px-2.5 py-1 rounded-full text-white ${cObj.class}`;
+            }
+
+            validateColors();
+        }
+
+        /**
+         * Check if all players have selected unique colors
+         */
+        function validateColors() {
+            const startBtn = document.getElementById('startGameBtn');
+            const errWarn = document.getElementById('colorConflictWarning');
+            if (!startBtn || !errWarn) return;
+
+            const chosen = Object.values(playerColors);
+            const allSelected = chosen.length === selectedPlayerCount;
+            const uniqueSelected = new Set(chosen).size === chosen.length;
+
+            if (allSelected && uniqueSelected) {
+                startBtn.disabled = false;
+                startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                errWarn.classList.add('hidden');
+            } else {
+                startBtn.disabled = true;
+                startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                if (allSelected && !uniqueSelected) {
+                    errWarn.classList.remove('hidden');
+                } else {
+                    errWarn.classList.add('hidden');
+                }
+            }
+        }
+
+        /**
+         * Start the game once setup is complete
+         */
+        function startGame() {
+            const key = getAccessKey();
+            // Save state so /play route can load configured players
+            localStorage.setItem('bg_helper_game_players', JSON.stringify({
+                count: selectedPlayerCount,
+                colors: playerColors
+            }));
+
+            // Redirect to /play with the security key in the URL
+            const playUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '') + '/play?key=' + encodeURIComponent(key);
+            window.location.href = playUrl;
+        }
+
+        function renderPlayCompanionFromState() {
+            const stored = localStorage.getItem('bg_helper_game_players');
+            if (!stored) {
+                showScreen('playerCountScreen');
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(stored);
+                selectedPlayerCount = data.count || 2;
+                playerColors = data.colors || {};
+            } catch (e) {
+                selectedPlayerCount = 2;
+                playerColors = {};
+            }
+
+            const summary = document.getElementById('activePlayersSummary');
+            if (!summary) return;
+            summary.innerHTML = '';
+            
+            for (let i = 1; i <= selectedPlayerCount; i++) {
+                const cId = playerColors[i];
+                const cObj = COLOR_OPTIONS.find(c => c.id === cId) || COLOR_OPTIONS[0];
+                
+                const chip = document.createElement('div');
+                chip.className = "flex items-center gap-3 bg-slate-800 border border-slate-700/60 px-4 py-2.5 rounded-xl shadow-sm";
+                chip.innerHTML = `
+                    <div class="w-6 h-6 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                        <img src="assets/${cObj.sprite}" alt="${cObj.name}" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
+                        <div class="fallback-cross hidden absolute inset-0 bg-slate-950 items-center justify-center text-rose-500">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </div>
+                    </div>
+                    <span class="font-semibold text-slate-200">Joueur ${i}</span>
+                    <span class="text-xs text-slate-400">(${cObj.name})</span>
+                `;
+                summary.appendChild(chip);
+            }
+        }
+
+        function resetSetup() {
+            showScreen('playerCountScreen');
+        }
+
+        window.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</head>
+<body class="h-full flex flex-col justify-center items-center p-4 sm:p-6 overflow-x-hidden bg-slate-950 text-slate-100">
+
+    <main class="w-full flex items-center justify-center">
+
+        <!-- ==================== SCREEN 0: AUTH MODAL ==================== -->
+        <section id="authScreen" class="hidden w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 backdrop-blur text-center space-y-6">
+            <div class="w-16 h-16 bg-indigo-600/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto border border-indigo-500/30">
+                <i class="fa-solid fa-lock text-2xl"></i>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-2">Accès Sécurisé</h2>
+                <p class="text-sm text-slate-400">Veuillez saisir le code d'accès pour démarrer.</p>
+            </div>
+
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <input type="text" id="codeInput" placeholder="Entrez le code" 
+                        class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-center text-lg tracking-wider font-mono uppercase text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40 transition">
+                    <p id="authError" class="hidden text-rose-400 text-xs mt-2 font-medium flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> Code invalide. Veuillez réessayer.
+                    </p>
+                </div>
+
+                <button type="submit" 
+                    class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+                    <span>Valider</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- ==================== SCREEN 1: PLAYER COUNT ==================== -->
+        <section id="playerCountScreen" class="hidden w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Combien de joueurs?</h2>
+                <p class="text-sm text-slate-400">Sélectionnez le nombre de participants pour la partie.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                <!-- Option 1: 1 Joueur (1 BLAB sprite) -->
+                <button onclick="selectPlayerCount(1)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
+                    <div class="flex items-center justify-center gap-1.5 min-h-[4rem]">
+                        <div class="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLAB.svg" alt="Sprite BLAB" class="w-9 h-9 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-white group-hover:text-indigo-400 transition block">1 Joueur</span>
+                    </div>
+                </button>
+
+                <!-- Option 2: 2 Joueurs (2 BLEB sprites) -->
+                <button onclick="selectPlayerCount(2)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
+                    <div class="flex items-center justify-center gap-1.5 min-h-[4rem]">
+                        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLEB.svg" alt="Sprite BLEB" class="w-7 h-7 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLEB.svg" alt="Sprite BLEB" class="w-7 h-7 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-white group-hover:text-indigo-400 transition block">2 Joueurs</span>
+                    </div>
+                </button>
+
+                <!-- Option 3: 3 Joueurs (3 BLIB sprites) -->
+                <button onclick="selectPlayerCount(3)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
+                    <div class="flex items-center justify-center gap-1 min-h-[4rem]">
+                        <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLIB.svg" alt="Sprite BLIB" class="w-6 h-6 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-base"></i>
+                            </div>
+                        </div>
+                        <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLIB.svg" alt="Sprite BLIB" class="w-6 h-6 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-base"></i>
+                            </div>
+                        </div>
+                        <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLIB.svg" alt="Sprite BLIB" class="w-6 h-6 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-base"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-white group-hover:text-indigo-400 transition block">3 Joueurs</span>
+                    </div>
+                </button>
+
+                <!-- Option 4: 4 Joueurs (4 BLOB sprites) -->
+                <button onclick="selectPlayerCount(4)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
+                    <div class="flex items-center justify-center gap-1 min-h-[4rem]">
+                        <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLOB.svg" alt="Sprite BLOB" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLOB.svg" alt="Sprite BLOB" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLOB.svg" alt="Sprite BLOB" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLOB.svg" alt="Sprite BLOB" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-white group-hover:text-indigo-400 transition block">4 Joueurs</span>
+                    </div>
+                </button>
+
+                <!-- Option 5: 5 Joueurs (5 BLUB sprites) -->
+                <button onclick="selectPlayerCount(5)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md sm:col-span-2 lg:col-span-1">
+                    <div class="flex items-center justify-center gap-1 min-h-[4rem]">
+                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-white group-hover:text-indigo-400 transition block">5 Joueurs</span>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== SCREEN 2: COLOR SELECTION ==================== -->
+        <section id="colorSelectionScreen" class="hidden w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">Couleurs des Joueurs</h2>
+                    <p class="text-xs sm:text-sm text-slate-400">Choisissez une couleur unique pour chaque joueur.</p>
+                </div>
+                <button onclick="showScreen('playerCountScreen')" class="text-xs text-slate-400 hover:text-white border border-slate-800 px-3 py-1.5 rounded-lg transition">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Retour
+                </button>
+            </div>
+
+            <div id="colorListContainer" class="space-y-4 max-h-[50vh] overflow-y-auto pr-1">
+                <!-- Dynamically populated -->
+            </div>
+
+            <div class="space-y-3 pt-2">
+                <p id="colorConflictWarning" class="hidden text-rose-400 text-xs font-medium text-center flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Chaque joueur doit avoir une couleur unique.
+                </p>
+
+                <button type="button" id="startGameBtn" disabled onclick="startGame()"
+                    class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+                    <span>Commencer la Partie</span>
+                    <i class="fa-solid fa-play text-xs"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== SCREEN 3: GAME ACTIVE HUD ==================== -->
+        <section id="gameCompanionScreen" class="hidden w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-8">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <h2 class="text-xl font-bold text-white">Partie en cours</h2>
+                </div>
+                <button onclick="resetSetup()" class="text-xs text-slate-400 hover:text-slate-200 border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg transition">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> Recommencer
+                </button>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Joueurs et Couleurs</h3>
+                <div id="activePlayersSummary" class="flex flex-wrap gap-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>
