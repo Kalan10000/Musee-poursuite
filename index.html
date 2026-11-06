@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Board Game Helper</title>
+    <title>Musée poursuite</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
@@ -122,7 +122,7 @@
                     <button type="button" 
                         onclick="assignColor(${i}, '${c.id}')" 
                         id="btn-p${i}-${c.id}"
-                        class="color-check-btn flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-800/60 hover:bg-slate-700/60 cursor-pointer text-left">
+                        class="color-check-btn flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-800/60 hover:bg-slate-700/60 cursor-pointer text-left transition">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 flex items-center justify-center relative">
                                 <img src="assets/${c.sprite}" alt="${c.name}" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
@@ -152,6 +152,7 @@
                 container.appendChild(pCard);
             }
 
+            updateButtonStates();
             validateColors();
         }
 
@@ -159,35 +160,71 @@
          * Assign a color to a specific player
          */
         function assignColor(playerNum, colorId) {
-            playerColors[playerNum] = colorId;
-
-            COLOR_OPTIONS.forEach(c => {
-                const btn = document.getElementById(`btn-p${playerNum}-${c.id}`);
-                if (!btn) return;
-                const icon = btn.querySelector('.check-icon');
-                if (c.id === colorId) {
-                    btn.className = `color-check-btn flex items-center justify-between p-3 rounded-xl border-2 ${c.border} bg-slate-800 cursor-pointer text-left ring-1 ring-white/10`;
-                    if (icon) {
-                        icon.classList.remove('opacity-0', 'text-slate-500');
-                        icon.classList.add('text-indigo-400');
-                    }
-                } else {
-                    btn.className = `color-check-btn flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-800/60 hover:bg-slate-700/60 cursor-pointer text-left`;
-                    if (icon) {
-                        icon.classList.add('opacity-0', 'text-slate-500');
-                        icon.classList.remove('text-indigo-400');
-                    }
-                }
-            });
-
-            const label = document.getElementById(`p${playerNum}-selected-label`);
-            const cObj = COLOR_OPTIONS.find(c => c.id === colorId);
-            if (label && cObj) {
-                label.textContent = cObj.name;
-                label.className = `text-xs font-semibold px-2.5 py-1 rounded-full text-white ${cObj.class}`;
+            // Si la même couleur est cliquée, on la désélectionne
+            if (playerColors[playerNum] === colorId) {
+                delete playerColors[playerNum];
+            } else {
+                playerColors[playerNum] = colorId;
             }
 
+            updateButtonStates();
             validateColors();
+        }
+
+        /**
+         * Update visual states and disable already selected colors for other players
+         */
+        function updateButtonStates() {
+            // Récupérer toutes les couleurs attribuées aux autres joueurs
+            const takenColors = Object.values(playerColors);
+
+            for (let i = 1; i <= selectedPlayerCount; i++) {
+                const selectedColor = playerColors[i];
+                const label = document.getElementById(`p${i}-selected-label`);
+
+                if (selectedColor) {
+                    const cObj = COLOR_OPTIONS.find(c => c.id === selectedColor);
+                    if (label && cObj) {
+                        label.textContent = cObj.name;
+                        label.className = `text-xs font-semibold px-2.5 py-1 rounded-full text-white ${cObj.class}`;
+                    }
+                } else if (label) {
+                    label.textContent = 'Non sélectionné';
+                    label.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400';
+                }
+
+                COLOR_OPTIONS.forEach(c => {
+                    const btn = document.getElementById(`btn-p${i}-${c.id}`);
+                    if (!btn) return;
+
+                    const icon = btn.querySelector('.check-icon');
+                    const isSelectedByThisPlayer = (selectedColor === c.id);
+                    const isTakenByAnotherPlayer = takenColors.includes(c.id) && !isSelectedByThisPlayer;
+
+                    if (isSelectedByThisPlayer) {
+                        btn.disabled = false;
+                        btn.className = `color-check-btn flex items-center justify-between p-3 rounded-xl border-2 ${c.border} bg-slate-800 cursor-pointer text-left ring-1 ring-white/10 opacity-100`;
+                        if (icon) {
+                            icon.classList.remove('opacity-0', 'text-slate-500');
+                            icon.classList.add('text-indigo-400');
+                        }
+                    } else if (isTakenByAnotherPlayer) {
+                        btn.disabled = true;
+                        btn.className = `color-check-btn flex items-center justify-between p-3 rounded-xl border border-slate-900 bg-slate-950/40 text-left opacity-30 cursor-not-allowed filter grayscale`;
+                        if (icon) {
+                            icon.classList.add('opacity-0', 'text-slate-500');
+                            icon.classList.remove('text-indigo-400');
+                        }
+                    } else {
+                        btn.disabled = false;
+                        btn.className = `color-check-btn flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-800/60 hover:bg-slate-700/60 cursor-pointer text-left opacity-100`;
+                        if (icon) {
+                            icon.classList.add('opacity-0', 'text-slate-500');
+                            icon.classList.remove('text-indigo-400');
+                        }
+                    }
+                });
+            }
         }
 
         /**
@@ -416,38 +453,33 @@
                     </div>
                 </button>
 
-                <!-- Option 5: 5 Joueurs (Extrémités rapprochées à x=11, sans rotation, et sprite du haut abaissé à y=-2.5) -->
+                <!-- Option 5: 5 Joueurs -->
                 <button onclick="selectPlayerCount(5)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md sm:col-span-2 lg:col-span-1">
                     <div class="flex items-center justify-center min-h-[4rem] relative w-48">
-                        <!-- Extrême gauche (rapproché, sans rotation) -->
                         <div class="w-8 h-8 flex items-center justify-center absolute -translate-x-11 -translate-y-0.5 rotate-0 transition group-hover:-translate-x-12">
                             <img src="assets/BLAB.svg" alt="Sprite Violet" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <!-- Milieu gauche (-15deg de rotation) -->
                         <div class="w-8 h-8 flex items-center justify-center absolute z-10 -translate-x-6 -translate-y-2 -rotate-15 transition group-hover:-translate-x-7 group-hover:-translate-y-2.5">
                             <img src="assets/BLEB.svg" alt="Sprite Bleu" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <!-- Centre (abaissé un tout petit peu à -translate-y-2.5) -->
                         <div class="w-8 h-8 flex items-center justify-center absolute z-20 -translate-y-2.5 rotate-0 transition group-hover:-translate-y-3.5">
                             <img src="assets/BLIB.svg" alt="Sprite Vert" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <!-- Milieu droite (15deg de rotation) -->
                         <div class="w-8 h-8 flex items-center justify-center absolute z-10 translate-x-6 -translate-y-2 rotate-15 transition group-hover:translate-x-7 group-hover:-translate-y-2.5">
                             <img src="assets/BLOB.svg" alt="Sprite Rouge" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <!-- Extrême droite (rapproché, sans rotation) -->
                         <div class="w-8 h-8 flex items-center justify-center absolute translate-x-11 -translate-y-0.5 rotate-0 transition group-hover:translate-x-12">
                             <img src="assets/BLUB.svg" alt="Sprite Jaune" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
                             <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
