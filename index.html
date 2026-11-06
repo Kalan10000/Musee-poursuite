@@ -26,13 +26,13 @@
             }
         }
 
-        // Available player colors setup with corresponding sprite fallback references
+        // Available player colors setup in order: Violet, Bleu, Vert, Rouge, Jaune
         const COLOR_OPTIONS = [
-            { id: 'red', name: 'Rouge', class: 'bg-red-500', border: 'border-red-500', sprite: 'BLAB.svg' },
+            { id: 'purple', name: 'Violet', class: 'bg-purple-500', border: 'border-purple-500', sprite: 'BLAB.svg' },
             { id: 'blue', name: 'Bleu', class: 'bg-blue-500', border: 'border-blue-500', sprite: 'BLEB.svg' },
             { id: 'green', name: 'Vert', class: 'bg-emerald-500', border: 'border-emerald-500', sprite: 'BLIB.svg' },
-            { id: 'yellow', name: 'Jaune', class: 'bg-amber-400', border: 'border-amber-400', sprite: 'BLOB.svg' },
-            { id: 'purple', name: 'Violet', class: 'bg-purple-500', border: 'border-purple-500', sprite: 'BLUB.svg' }
+            { id: 'red', name: 'Rouge', class: 'bg-red-500', border: 'border-red-500', sprite: 'BLOB.svg' },
+            { id: 'yellow', name: 'Jaune', class: 'bg-amber-400', border: 'border-amber-400', sprite: 'BLUB.svg' }
         ];
 
         let selectedPlayerCount = 0;
@@ -124,9 +124,9 @@
                         id="btn-p${i}-${c.id}"
                         class="color-check-btn flex items-center justify-between p-3 rounded-xl border border-slate-800 bg-slate-800/60 hover:bg-slate-700/60 cursor-pointer text-left">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                                <img src="assets/${c.sprite}" alt="${c.name}" class="w-6 h-6 object-contain" onerror="handleSpriteError(this)">
-                                <div class="fallback-cross hidden absolute inset-0 bg-slate-950 items-center justify-center text-rose-500">
+                            <div class="w-8 h-8 flex items-center justify-center relative">
+                                <img src="assets/${c.sprite}" alt="${c.name}" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                                <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                     <i class="fa-solid fa-xmark text-sm"></i>
                                 </div>
                             </div>
@@ -260,9 +260,9 @@
                 const chip = document.createElement('div');
                 chip.className = "flex items-center gap-3 bg-slate-800 border border-slate-700/60 px-4 py-2.5 rounded-xl shadow-sm";
                 chip.innerHTML = `
-                    <div class="w-6 h-6 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                        <img src="assets/${cObj.sprite}" alt="${cObj.name}" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
-                        <div class="fallback-cross hidden absolute inset-0 bg-slate-950 items-center justify-center text-rose-500">
+                    <div class="w-6 h-6 flex items-center justify-center relative">
+                        <img src="assets/${cObj.sprite}" alt="${cObj.name}" class="w-6 h-6 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                        <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </div>
                     </div>
@@ -320,12 +320,12 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
-                <!-- Option 1: 1 Joueur (1 BLAB sprite) -->
+                <!-- Option 1: 1 Joueur (Violet) -->
                 <button onclick="selectPlayerCount(1)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
-                    <div class="flex items-center justify-center gap-1.5 min-h-[4rem]">
-                        <div class="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLAB.svg" alt="Sprite BLAB" class="w-9 h-9 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                    <div class="flex items-center justify-center min-h-[4rem] relative">
+                        <div class="w-10 h-10 flex items-center justify-center relative">
+                            <img src="assets/BLAB.svg" alt="Sprite Violet" class="w-10 h-10 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xl"></i>
                             </div>
                         </div>
@@ -335,18 +335,18 @@
                     </div>
                 </button>
 
-                <!-- Option 2: 2 Joueurs (2 BLEB sprites) -->
+                <!-- Option 2: 2 Joueurs (Violet, Bleu) -->
                 <button onclick="selectPlayerCount(2)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
-                    <div class="flex items-center justify-center gap-1.5 min-h-[4rem]">
-                        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLEB.svg" alt="Sprite BLEB" class="w-7 h-7 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                    <div class="flex items-center justify-center min-h-[4rem] relative w-24">
+                        <div class="w-10 h-10 flex items-center justify-center absolute -translate-x-3 -rotate-12 transition group-hover:-translate-x-4">
+                            <img src="assets/BLAB.svg" alt="Sprite Violet" class="w-10 h-10 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-lg"></i>
                             </div>
                         </div>
-                        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLEB.svg" alt="Sprite BLEB" class="w-7 h-7 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <div class="w-10 h-10 flex items-center justify-center absolute translate-x-3 rotate-12 transition group-hover:translate-x-4">
+                            <img src="assets/BLEB.svg" alt="Sprite Bleu" class="w-10 h-10 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-lg"></i>
                             </div>
                         </div>
@@ -356,24 +356,24 @@
                     </div>
                 </button>
 
-                <!-- Option 3: 3 Joueurs (3 BLIB sprites) -->
+                <!-- Option 3: 3 Joueurs (Violet, Bleu, Vert) -->
                 <button onclick="selectPlayerCount(3)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
-                    <div class="flex items-center justify-center gap-1 min-h-[4rem]">
-                        <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLIB.svg" alt="Sprite BLIB" class="w-6 h-6 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                    <div class="flex items-center justify-center min-h-[4rem] relative w-28">
+                        <div class="w-10 h-10 flex items-center justify-center absolute -translate-x-5 -rotate-12 transition group-hover:-translate-x-6">
+                            <img src="assets/BLAB.svg" alt="Sprite Violet" class="w-10 h-10 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-base"></i>
                             </div>
                         </div>
-                        <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLIB.svg" alt="Sprite BLIB" class="w-6 h-6 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <div class="w-10 h-10 flex items-center justify-center absolute z-10 -translate-y-1 transition group-hover:-translate-y-2">
+                            <img src="assets/BLEB.svg" alt="Sprite Bleu" class="w-10 h-10 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-base"></i>
                             </div>
                         </div>
-                        <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLIB.svg" alt="Sprite BLIB" class="w-6 h-6 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <div class="w-10 h-10 flex items-center justify-center absolute translate-x-5 rotate-12 transition group-hover:translate-x-6">
+                            <img src="assets/BLIB.svg" alt="Sprite Vert" class="w-10 h-10 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-base"></i>
                             </div>
                         </div>
@@ -383,30 +383,30 @@
                     </div>
                 </button>
 
-                <!-- Option 4: 4 Joueurs (4 BLOB sprites) -->
+                <!-- Option 4: 4 Joueurs (Violet, Bleu, Vert, Rouge) -->
                 <button onclick="selectPlayerCount(4)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
-                    <div class="flex items-center justify-center gap-1 min-h-[4rem]">
-                        <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLOB.svg" alt="Sprite BLOB" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                    <div class="flex items-center justify-center min-h-[4rem] relative w-32">
+                        <div class="w-9 h-9 flex items-center justify-center absolute -translate-x-7 -rotate-12 transition group-hover:-translate-x-8">
+                            <img src="assets/BLAB.svg" alt="Sprite Violet" class="w-9 h-9 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-sm"></i>
                             </div>
                         </div>
-                        <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLOB.svg" alt="Sprite BLOB" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <div class="w-9 h-9 flex items-center justify-center absolute -translate-x-2.5 -translate-y-1 z-10 -rotate-6 transition group-hover:-translate-x-3 group-hover:-translate-y-2">
+                            <img src="assets/BLEB.svg" alt="Sprite Bleu" class="w-9 h-9 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-sm"></i>
                             </div>
                         </div>
-                        <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLOB.svg" alt="Sprite BLOB" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <div class="w-9 h-9 flex items-center justify-center absolute translate-x-2.5 -translate-y-1 z-10 rotate-6 transition group-hover:translate-x-3 group-hover:-translate-y-2">
+                            <img src="assets/BLIB.svg" alt="Sprite Vert" class="w-9 h-9 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-sm"></i>
                             </div>
                         </div>
-                        <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLOB.svg" alt="Sprite BLOB" class="w-5 h-5 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <div class="w-9 h-9 flex items-center justify-center absolute translate-x-7 rotate-12 transition group-hover:translate-x-8">
+                            <img src="assets/BLOB.svg" alt="Sprite Rouge" class="w-9 h-9 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-sm"></i>
                             </div>
                         </div>
@@ -416,36 +416,41 @@
                     </div>
                 </button>
 
-                <!-- Option 5: 5 Joueurs (5 BLUB sprites) -->
+                <!-- Option 5: 5 Joueurs (Aéré / Espacé en bouquet) -->
                 <button onclick="selectPlayerCount(5)" class="group bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md sm:col-span-2 lg:col-span-1">
-                    <div class="flex items-center justify-center gap-1 min-h-[4rem]">
-                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                    <div class="flex items-center justify-center min-h-[4rem] relative w-48">
+                        <!-- Extrême gauche -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute -translate-x-14 -rotate-18 transition group-hover:-translate-x-16">
+                            <img src="assets/BLAB.svg" alt="Sprite Violet" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <!-- Milieu gauche -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute z-10 -translate-x-7 -translate-y-1.5 -rotate-9 transition group-hover:-translate-x-8 group-hover:-translate-y-2">
+                            <img src="assets/BLEB.svg" alt="Sprite Bleu" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <!-- Centre -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute z-20 -translate-y-3 transition group-hover:-translate-y-4">
+                            <img src="assets/BLIB.svg" alt="Sprite Vert" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <!-- Milieu droite -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute z-10 translate-x-7 -translate-y-1.5 rotate-9 transition group-hover:translate-x-8 group-hover:-translate-y-2">
+                            <img src="assets/BLOB.svg" alt="Sprite Rouge" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
-                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                            <img src="assets/BLUB.svg" alt="Sprite BLUB" class="w-4 h-4 object-contain" onerror="handleSpriteError(this)">
-                            <div class="fallback-cross hidden absolute inset-0 bg-slate-900 items-center justify-center text-rose-500">
+                        <!-- Extrême droite -->
+                        <div class="w-8 h-8 flex items-center justify-center absolute translate-x-14 rotate-18 transition group-hover:translate-x-16">
+                            <img src="assets/BLUB.svg" alt="Sprite Jaune" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
+                            <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </div>
                         </div>
