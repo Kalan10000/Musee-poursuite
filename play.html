@@ -47,7 +47,7 @@
 
         let selectedPlayerIndex = null;
         let selectedTileId = null;
-        let gameData = { count: 5, colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' } };
+        let gameData = { count: 5, colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' }, difficulty: 'easy' };
 
         /**
          * Initialize App Data safely
@@ -140,9 +140,12 @@
                 caseSection.classList.add('flex');
             }
 
-            // Hide action panel until tile selected
+            // Hide action panel and multicolor notice until tile selected
             const actionPanel = document.getElementById('actionPanel');
             if (actionPanel) actionPanel.classList.add('hidden');
+
+            const multicolorNotice = document.getElementById('multicolorNotice');
+            if (multicolorNotice) multicolorNotice.classList.add('hidden');
 
             renderTiles();
         }
@@ -216,6 +219,17 @@
                 }
             });
 
+            // Show/hide special revision notice if Multicouleur is clicked
+            const multicolorNotice = document.getElementById('multicolorNotice');
+            if (multicolorNotice) {
+                if (tile.id === 'multicolor') {
+                    multicolorNotice.textContent = `Joueur ${selectedPlayerIndex} peut réviser jusqu'à son prochain tour !`;
+                    multicolorNotice.classList.remove('hidden');
+                } else {
+                    multicolorNotice.classList.add('hidden');
+                }
+            }
+
             // Reveal action button panel
             const actionPanel = document.getElementById('actionPanel');
             const summaryText = document.getElementById('actionSummaryText');
@@ -284,6 +298,11 @@
             <!-- 6 Tile categories grid (3x2 responsive) -->
             <div id="tilesGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <!-- Dynamically populated by JS -->
+            </div>
+
+            <!-- Multicouleur Revision Notice -->
+            <div id="multicolorNotice" class="hidden text-amber-200 text-xs font-semibold text-center py-2 px-3 bg-amber-500/20 border border-amber-400/40 rounded-xl">
+                <!-- Populated dynamically when Multicouleur is clicked -->
             </div>
 
             <!-- Action button panel -->
