@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -24,11 +26,11 @@
         }
 
         const COLOR_OPTIONS = [
-            { id: 'purple', name: 'Violet', category: 'taille', icon: 'fa-ruler-combined', bgClass: 'bg-purple-600', borderClass: 'border-purple-500', sprite: 'BLAB.svg' },
-            { id: 'blue', name: 'Bleu', category: 'titre', icon: 'fa-heading', bgClass: 'bg-blue-600', borderClass: 'border-blue-500', sprite: 'BLEB.svg' },
-            { id: 'green', name: 'Vert', category: 'auteur', icon: 'fa-user-pen', bgClass: 'bg-emerald-600', borderClass: 'border-emerald-500', sprite: 'BLIB.svg' },
-            { id: 'red', name: 'Rouge', category: 'date', icon: 'fa-calendar-days', bgClass: 'bg-red-600', borderClass: 'border-red-500', sprite: 'BLOB.svg' },
-            { id: 'yellow', name: 'Jaune', category: 'technique', icon: 'fa-gears', bgClass: 'bg-amber-500', borderClass: 'border-amber-400', sprite: 'BLUB.svg' }
+            { id: 'purple', name: 'Violet', category: 'taille', icon: 'fa-ruler-combined', bgClass: 'bg-purple-600', borderClass: 'border-purple-500', sprite: 'BLAB.svg', ringColor: '#9333ea' },
+            { id: 'blue', name: 'Bleu', category: 'titre', icon: 'fa-heading', bgClass: 'bg-blue-600', borderClass: 'border-blue-500', sprite: 'BLEB.svg', ringColor: '#2563eb' },
+            { id: 'green', name: 'Vert', category: 'auteur', icon: 'fa-user-pen', bgClass: 'bg-emerald-600', borderClass: 'border-emerald-500', sprite: 'BLIB.svg', ringColor: '#059669' },
+            { id: 'red', name: 'Rouge', category: 'date', icon: 'fa-calendar-days', bgClass: 'bg-red-600', borderClass: 'border-red-500', sprite: 'BLOB.svg', ringColor: '#dc2626' },
+            { id: 'yellow', name: 'Jaune', category: 'technique', icon: 'fa-gears', bgClass: 'bg-amber-500', borderClass: 'border-amber-400', sprite: 'BLUB.svg', ringColor: '#d97706' }
         ];
 
         const MULTICOLOR_TILE = {
@@ -38,7 +40,8 @@
             icon: 'fa-shapes',
             bgClass: 'bg-gradient-to-br from-purple-700 via-emerald-600 to-amber-500',
             borderClass: 'border-amber-300',
-            isMulticolor: true
+            isMulticolor: true,
+            ringColor: '#f59e0b'
         };
 
         const ARTWORKS_DB = [
@@ -64,7 +67,8 @@
         let gameData = { count: 5, colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' }, names: {}, difficulty: 'easy' };
         
         let playerSuccessColors = {}; 
-        let recentArtworksHistory = []; // Historique pour éviter les répétitions en boucle
+        let playerFailedColor = {}; 
+        let recentArtworksHistory = [];
 
         let currentActiveArtwork = null;
         let currentActiveCategoryKey = null;
@@ -168,22 +172,30 @@
 
             const allTiles = [...COLOR_OPTIONS, MULTICOLOR_TILE];
             const successSet = playerSuccessColors[selectedPlayerIndex] || new Set();
+            const failedColorId = playerFailedColor[selectedPlayerIndex];
 
             allTiles.forEach(tile => {
                 const isSuccess = successSet.has(tile.id);
+                const isFailedBlock = (tile.id === failedColorId);
 
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.id = `tile-btn-${tile.id}`;
                 
-                if (isSuccess) {
-                    btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl border border-[#03fc07] text-white shadow-md text-left w-full cursor-pointer hover:brightness-110`;
-                    btn.style.backgroundColor = '#03fc07';
+                if (isFailedBlock) {
+                    btn.disabled = true;
+                    btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl border border-rose-500 bg-rose-950/60 text-rose-300 opacity-80 cursor-not-allowed text-left w-full`;
                 } else {
-                    btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl border border-white/20 ${tile.bgClass} text-white shadow-md transition cursor-pointer text-left w-full hover:brightness-110`;
+                    btn.onclick = () => selectTile(tile);
+                    if (isSuccess) {
+                        // Double bordure avec la couleur exacte de l'épreuve autour de la carte d'origine
+                        btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl ${tile.bgClass} text-white shadow-md transition cursor-pointer text-left w-full hover:brightness-110`;
+                        btn.style.boxShadow = `0 0 0 4px #1D3842, 0 0 0 8px ${tile.ringColor}`;
+                    } else {
+                        btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl border border-white/20 ${tile.bgClass} text-white shadow-md transition cursor-pointer text-left w-full hover:brightness-110`;
+                        btn.style.boxShadow = 'none';
+                    }
                 }
-
-                btn.onclick = () => selectTile(tile);
 
                 let iconMarkup = '';
                 if (tile.isMulticolor) {
@@ -204,15 +216,17 @@
                     `;
                 }
 
-                let statusText = isSuccess ? '(Réussi - Rejouable)' : '';
+                let statusText = '';
+                if (isSuccess) statusText = '(Réussi)';
+                if (isFailedBlock) statusText = '(Bloqué - Répondez ailleurs)';
 
                 btn.innerHTML = `
                     ${iconMarkup}
                     <div class="min-w-0 flex-1">
-                        <div class="text-xs font-bold leading-tight truncate ${isSuccess ? 'text-black' : ''}">${tile.name} ${statusText}</div>
-                        <div class="text-[10px] font-medium uppercase tracking-wider ${isSuccess ? 'text-black/80' : 'opacity-90'} truncate">${tile.category}</div>
+                        <div class="text-xs font-bold leading-tight truncate">${tile.name} ${statusText}</div>
+                        <div class="text-[10px] font-medium uppercase tracking-wider opacity-90 truncate">${tile.category}</div>
                     </div>
-                    <i class="fa-solid ${isSuccess ? 'fa-check text-black' : 'fa-circle-check opacity-0 check-tile-icon'} text-xs shrink-0"></i>
+                    <i class="fa-solid ${isSuccess ? 'fa-check' : (isFailedBlock ? 'fa-lock' : 'fa-circle-check opacity-0 check-tile-icon')} text-xs shrink-0"></i>
                 `;
 
                 container.appendChild(btn);
@@ -239,11 +253,14 @@
             const questionContainer = document.getElementById('questionContainer');
 
             if (tile.id === 'multicolor') {
+                playerFailedColor[selectedPlayerIndex] = null; // Débloque l'erreur précédente
+
                 if (multicolorNotice) {
-                    multicolorNotice.textContent = `${playerName} peut réviser jusqu'à son prochain tour !`;
+                    multicolorNotice.textContent = `${playerName} peut réviser jusqu'à son prochain tour ! (Débloqué)`;
                     multicolorNotice.classList.remove('hidden');
                 }
                 if (questionContainer) questionContainer.classList.add('hidden');
+                renderTiles();
             } else {
                 if (multicolorNotice) multicolorNotice.classList.add('hidden');
                 generateQuestionForTile(tile);
@@ -262,7 +279,6 @@
         function generateQuestionForTile(tile) {
             currentActiveCategoryKey = tile.category;
             
-            // Anti-répétition : sélection d'une œuvre aléatoire non présente dans les 5 dernières jouées
             let availableArtworks = ARTWORKS_DB.filter(a => !recentArtworksHistory.includes(a.title));
             if (availableArtworks.length === 0) {
                 recentArtworksHistory = [];
@@ -271,7 +287,6 @@
             const randomIndex = Math.floor(Math.random() * availableArtworks.length);
             currentActiveArtwork = availableArtworks[randomIndex];
 
-            // Mettre à jour l'historique récent (garde en mémoire les 5 dernières)
             recentArtworksHistory.push(currentActiveArtwork.title);
             if (recentArtworksHistory.length > 5) {
                 recentArtworksHistory.shift();
@@ -384,17 +399,22 @@
         }
 
         function checkEasyAnswer(selectedOption, correctOption) {
+            // Dès qu'on répond à une question, le blocage de l'échec précédent est levé
+            playerFailedColor[selectedPlayerIndex] = null;
+
             const feedbackEl = document.getElementById('questionFeedback');
             if (!feedbackEl) return;
             feedbackEl.classList.remove('hidden');
 
             if (selectedOption === correctOption) {
                 markColorAsSuccess(selectedPlayerIndex, selectedTileId);
+                triggerConfetti();
                 feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center';
-                feedbackEl.innerHTML = `<div class="text-sm font-extrabold text-[#03fc07]">Réussi !</div>`;
+                feedbackEl.innerHTML = `<div class="text-sm font-extrabold text-[#03fc07]">Bonne réponse !</div>`;
             } else {
+                markColorAsFailed(selectedPlayerIndex, selectedTileId);
                 feedbackEl.className = 'p-3 rounded-xl bg-rose-500/20 border border-rose-500 text-rose-200 text-xs font-semibold text-center';
-                feedbackEl.innerHTML = `<div class="text-sm font-extrabold text-rose-300">Pas réussi !</div>`;
+                feedbackEl.innerHTML = `<div class="text-sm font-extrabold text-rose-300">Mauvaise réponse ! (Case bloquée, testez une autre couleur)</div>`;
             }
         }
 
@@ -404,6 +424,9 @@
 
             const userVal = selectEl.value;
             if (!userVal) return;
+
+            // Dès qu'on répond, le blocage précédent est levé
+            playerFailedColor[selectedPlayerIndex] = null;
 
             let correctVal = '';
             if (currentActiveCategoryKey === 'titre') {
@@ -419,11 +442,23 @@
 
             if (isCorrect) {
                 markColorAsSuccess(selectedPlayerIndex, selectedTileId);
+                triggerConfetti();
                 feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center';
-                feedbackEl.innerHTML = `<div class="text-sm font-extrabold text-[#03fc07]">Réussi !</div>`;
+                feedbackEl.innerHTML = `<div class="text-sm font-extrabold text-[#03fc07]">Bonne réponse !</div>`;
             } else {
+                markColorAsFailed(selectedPlayerIndex, selectedTileId);
                 feedbackEl.className = 'p-3 rounded-xl bg-rose-500/20 border border-rose-500 text-rose-200 text-xs font-semibold text-center';
-                feedbackEl.innerHTML = `<div class="text-sm font-extrabold text-rose-300">Pas réussi !</div>`;
+                feedbackEl.innerHTML = `<div class="text-sm font-extrabold text-rose-300">Mauvaise réponse ! (Case bloquée, testez une autre couleur)</div>`;
+            }
+        }
+
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 80,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
             }
         }
 
@@ -432,6 +467,7 @@
                 playerSuccessColors[playerIdx] = new Set();
             }
             playerSuccessColors[playerIdx].add(tileId);
+            playerFailedColor[playerIdx] = null;
 
             renderTiles();
             renderPlayers();
@@ -442,6 +478,11 @@
                     alert(`🏆 VICTOIRE ! ${playerName} a réussi toutes ses couleurs et a gagné la partie !`);
                 }, 300);
             }
+        }
+
+        function markColorAsFailed(playerIdx, tileId) {
+            playerFailedColor[playerIdx] = tileId;
+            renderTiles();
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
