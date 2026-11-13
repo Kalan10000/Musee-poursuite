@@ -93,17 +93,17 @@
                 btn.type = 'button';
                 btn.id = `player-card-${i}`;
                 btn.onclick = () => selectPlayer(i, colorObj, playerName);
-                btn.className = `player-btn flex-1 flex flex-col items-center justify-center p-2 rounded-xl border-2 border-[#417E94] bg-[#2D5766] hover:bg-[#417E94]/40 transition text-center cursor-pointer shadow-md group`;
+                btn.className = `player-btn flex-1 min-w-0 flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border-2 border-[#417E94] bg-[#2D5766] hover:bg-[#417E94]/40 transition text-center cursor-pointer shadow-md group`;
 
                 btn.innerHTML = `
-                    <div class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center relative my-0.5">
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center relative my-0.5">
                         <img src="assets/${colorObj.sprite}" alt="${colorObj.name}" class="w-full h-full object-contain drop-shadow" onerror="handleSpriteError(this)">
                         <div class="fallback-cross hidden absolute inset-0 items-center justify-center text-rose-500">
-                            <i class="fa-solid fa-xmark text-base"></i>
+                            <i class="fa-solid fa-xmark text-sm sm:text-base"></i>
                         </div>
                     </div>
-                    <span class="text-xs font-extrabold text-white group-hover:text-[#65C3E6] truncate w-full">${playerName}</span>
-                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${colorObj.bgClass} text-white shadow-sm mt-0.5">${colorObj.name}</span>
+                    <span class="text-[11px] sm:text-xs font-extrabold text-white group-hover:text-[#65C3E6] truncate w-full">${playerName}</span>
+                    <span class="text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full ${colorObj.bgClass} text-white shadow-sm mt-0.5 truncate max-w-full">${colorObj.name}</span>
                 `;
 
                 container.appendChild(btn);
@@ -247,13 +247,13 @@
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </head>
-<body class="h-full bg-[#1D3842] text-slate-100 flex flex-col items-center justify-start p-3 sm:p-4 max-w-xl mx-auto">
+<body class="min-h-full h-auto bg-[#1D3842] text-slate-100 flex flex-col items-center justify-start p-2 sm:p-4 max-w-xl mx-auto overflow-y-auto">
 
     <!-- MAIN CONTAINER -->
-    <main class="w-full flex flex-col gap-3">
+    <main class="w-full flex flex-col gap-3 pb-4">
 
         <!-- ==================== SECTION 1: 5 PLAYERS SELECTION ==================== -->
-        <section id="playersSection" class="bg-[#2D5766] border border-[#417E94] rounded-2xl p-3 shadow-xl">
+        <section id="playersSection" class="bg-[#2D5766] border border-[#417E94] rounded-2xl p-2.5 sm:p-3 shadow-xl">
             <div class="flex items-center justify-between mb-2">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
                     <i class="fa-solid fa-users text-[#65C3E6]"></i> Sélectionner un joueur
@@ -262,7 +262,7 @@
             </div>
 
             <!-- Player cards grid (5 players max) -->
-            <div id="playersGrid" class="flex gap-1.5 w-full">
+            <div id="playersGrid" class="grid grid-cols-5 gap-1 sm:gap-1.5 w-full">
                 <!-- Dynamically populated by JS -->
             </div>
         </section>
@@ -274,7 +274,7 @@
                     <div class="w-2 h-2 rounded-full bg-[#65C3E6] animate-ping"></div>
                     <h3 class="text-sm font-extrabold text-white">Quelle case ?</h3>
                 </div>
-                <span id="selectedPlayerLabel" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#1D3842] text-[#65C3E6] border border-[#417E94]">
+                <span id="selectedPlayerLabel" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#1D3842] text-[#65C3E6] border border-[#417E94] truncate max-w-[160px] sm:max-w-xs">
                     Joueur sélectionné
                 </span>
             </div>
