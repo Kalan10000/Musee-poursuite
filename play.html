@@ -45,137 +45,38 @@
             isMulticolor: true
         };
 
-        // Database of 15 artworks and questions extracted from questions.docx
+        // Database of 15 artworks with corresponding image filenames in assets/
         const ARTWORKS_DB = [
-            {
-                title: "La Cène",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Raphaël", "Michel-Ange", "Léonard de Vinci"], correct: "Léonard de Vinci" },
-                date: { question: "Date (Année) :", options: ["1515", "1425", "1498"], correct: "1498" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["300 x 500 cm", "460 x 880 cm", "200 x 300 cm"], correct: "460 x 880 cm" },
-                technique: { question: "Technique :", options: ["Huile sur toile", "Peinture murale (tempera et huile sur plâtre)", "Fresque"], correct: "Peinture murale (tempera et huile sur plâtre)" }
-            },
-            {
-                title: "La Joconde",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Léonard de Vinci", "Le Caravage", "Sandro Botticelli"], correct: "Léonard de Vinci" },
-                date: { question: "Date (Année) :", options: ["1485", "1503", "1540"], correct: "1503" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["45 x 35 cm", "77 x 53 cm", "120 x 90 cm"], correct: "77 x 53 cm" },
-                technique: { question: "Technique :", options: ["Huile sur panneau de peuplier", "Huile sur toile", "Détrempe sur bois"], correct: "Huile sur panneau de peuplier" }
-            },
-            {
-                title: "La Ronde de nuit",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Frans Hals", "Rembrandt", "Johannes Vermeer"], correct: "Rembrandt" },
-                date: { question: "Date (Année) :", options: ["1610", "1675", "1642"], correct: "1642" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["379 x 454 cm", "250 x 300 cm", "150 x 200 cm"], correct: "379 x 454 cm" },
-                technique: { question: "Technique :", options: ["Huile sur toile", "Technique mixte", "Huile sur bois"], correct: "Huile sur toile" }
-            },
-            {
-                title: "La Jeune Fille à la perle",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Johannes Vermeer", "Pieter de Hooch", "Rembrandt"], correct: "Johannes Vermeer" },
-                date: { question: "Date (Année) :", options: ["1690", "1630", "1665"], correct: "1665" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["45 x 40 cm", "70 x 60 cm", "30 x 25 cm"], correct: "45 x 40 cm" },
-                technique: { question: "Technique :", options: ["Aquarelle", "Huile sur toile", "Huile sur panneau"], correct: "Huile sur toile" }
-            },
-            {
-                title: "La Grande Vague de Kanagawa",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Utagawa Hiroshige", "Toshusai Sharaku", "Katsushika Hokusai"], correct: "Katsushika Hokusai" },
-                date: { question: "Date (Année) :", options: ["1795", "1831", "1865"], correct: "1831" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["50 x 70 cm", "26 x 38 cm", "15 x 20 cm"], correct: "26 x 38 cm" },
-                technique: { question: "Technique :", options: ["Huile sur toile", "Estampe (gravure sur bois, ukiyo-e)", "Peinture à l'encre sur soie"], correct: "Estampe (gravure sur bois, ukiyo-e)" }
-            },
-            {
-                title: "Impression, soleil levant",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Claude Monet", "Camille Pissarro", "Pierre-Auguste Renoir"], correct: "Claude Monet" },
-                date: { question: "Date (Année) :", options: ["1885", "1860", "1872"], correct: "1872" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["100 x 120 cm", "48 x 63 cm", "30 x 40 cm"], correct: "48 x 63 cm" },
-                technique: { question: "Technique :", options: ["Acrylique sur toile", "Pastel sur papier", "Huile sur toile"], correct: "Huile sur toile" }
-            },
-            {
-                title: "Le Penseur",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Auguste Rodin", "Antoine Bourdelle", "Camille Claudel"], correct: "Auguste Rodin" },
-                date: { question: "Date (Année) :", options: ["1925", "1880", "1904"], correct: "1904" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["80 x 40 x 50 cm", "300 x 150 x 200 cm", "189 x 98 x 140 cm"], correct: "189 x 98 x 140 cm" },
-                technique: { question: "Technique :", options: ["Sculpture en marbre", "Taille directe sur pierre", "Sculpture en bronze"], correct: "Sculpture en bronze" }
-            },
-            {
-                title: "La Nuit étoilée",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Edvard Munch", "Vincent van Gogh", "Paul Gauguin"], correct: "Vincent van Gogh" },
-                date: { question: "Date (Année) :", options: ["1878", "1889", "1901"], correct: "1889" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["50 x 60 cm", "120 x 150 cm", "74 x 92 cm"], correct: "74 x 92 cm" },
-                technique: { question: "Technique :", options: ["Gouache sur papier", "Huile sur panneau", "Huile sur toile"], correct: "Huile sur toile" }
-            },
-            {
-                title: "Le Cri",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Edvard Munch", "Gustav Klimt", "Egon Schiele"], correct: "Edvard Munch" },
-                date: { question: "Date (Année) :", options: ["1880", "1893", "1905"], correct: "1893" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["150 x 120 cm", "91 x 74 cm", "50 x 40 cm"], correct: "91 x 74 cm" },
-                technique: { question: "Technique :", options: ["Huile, tempera et pastel sur carton", "Huile sur toile", "Gravure sur bois"], correct: "Huile, tempera et pastel sur carton" }
-            },
-            {
-                title: "American Gothic",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Georgia O'Keeffe", "Edward Hopper", "Grant Wood"], correct: "Grant Wood" },
-                date: { question: "Date (Année) :", options: ["1930", "1915", "1945"], correct: "1930" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["110 x 90 cm", "50 x 40 cm", "78 x 65 cm"], correct: "78 x 65 cm" },
-                technique: { question: "Technique :", options: ["Huile sur panneau de beaverboard", "Acrylique sur toile", "Huile sur toile"], correct: "Huile sur panneau de beaverboard" }
-            },
-            {
-                title: "La Persistance de la mémoire",
-                auteur: { question: "Auteur de l'œuvre :", options: ["René Magritte", "Max Ernst", "Salvador Dalí"], correct: "Salvador Dalí" },
-                date: { question: "Date (Année) :", options: ["1931", "1924", "1940"], correct: "1931" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["60 x 80 cm", "100 x 120 cm", "24 x 33 cm"], correct: "24 x 33 cm" },
-                technique: { question: "Technique :", options: ["Huile sur toile", "Huile sur panneau de bois", "Gouache sur papier"], correct: "Huile sur toile" }
-            },
-            {
-                title: "Guernica",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Salvador Dalí", "Joan Miró", "Pablo Picasso"], correct: "Pablo Picasso" },
-                date: { question: "Date (Année) :", options: ["1920", "1950", "1937"], correct: "1937" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["349 x 776 cm", "150 x 300 cm", "200 x 400 cm"], correct: "349 x 776 cm" },
-                technique: { question: "Technique :", options: ["Acrylique et techniques mixtes", "Fresque murale", "Huile sur toile"], correct: "Huile sur toile" }
-            },
-            {
-                title: "Nighthawks",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Jackson Pollock", "Grant Wood", "Edward Hopper"], correct: "Edward Hopper" },
-                date: { question: "Date (Année) :", options: ["1928", "1942", "1955"], correct: "1942" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["84 x 153 cm", "120 x 200 cm", "50 x 90 cm"], correct: "84 x 153 cm" },
-                technique: { question: "Technique :", options: ["Huile sur toile", "Huile sur panneau", "Acrylique sur toile"], correct: "Huile sur toile" }
-            },
-            {
-                title: "Diptyque de Marilyn",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Andy Warhol", "Roy Lichtenstein", "Keith Haring"], correct: "Andy Warhol" },
-                date: { question: "Date (Année) :", options: ["1975", "1962", "1950"], correct: "1962" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["100 x 150 cm", "205 x 290 cm", "300 x 400 cm"], correct: "205 x 290 cm" },
-                technique: { question: "Technique :", options: ["Impression numérique", "Huile et acrylique", "Sérigraphie sur toile"], correct: "Sérigraphie sur toile" }
-            },
-            {
-                title: "Le Fils de l'homme",
-                auteur: { question: "Auteur de l'œuvre :", options: ["Paul Delvaux", "René Magritte", "Salvador Dalí"], correct: "René Magritte" },
-                date: { question: "Date (Année) :", options: ["1964", "1971", "1952"], correct: "1964" },
-                taille: { question: "Taille (arrondi au cm) :", options: ["116 x 89 cm", "150 x 120 cm", "70 x 50 cm"], correct: "116 x 89 cm" },
-                technique: { question: "Technique :", options: ["Huile sur toile", "Huile sur panneau", "Gouache sur papier"], correct: "Huile sur toile" }
-            }
+            { title: "La Cène", image: "la-cene.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Raphaël", "Michel-Ange", "Léonard de Vinci"], correct: "Léonard de Vinci" }, date: { question: "Date (Année) :", options: ["1515", "1425", "1498"], correct: "1498" }, taille: { question: "Taille (arrondi au cm) :", options: ["300 x 500 cm", "460 x 880 cm", "200 x 300 cm"], correct: "460 x 880 cm" }, technique: { question: "Technique :", options: ["Huile sur toile", "Peinture murale (tempera et huile sur plâtre)", "Fresque"], correct: "Peinture murale (tempera et huile sur plâtre)" } },
+            { title: "La Joconde", image: "la-joconde.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Léonard de Vinci", "Le Caravage", "Sandro Botticelli"], correct: "Léonard de Vinci" }, date: { question: "Date (Année) :", options: ["1485", "1503", "1540"], correct: "1503" }, taille: { question: "Taille (arrondi au cm) :", options: ["45 x 35 cm", "77 x 53 cm", "120 x 90 cm"], correct: "77 x 53 cm" }, technique: { question: "Technique :", options: ["Huile sur panneau de peuplier", "Huile sur toile", "Détrempe sur bois"], correct: "Huile sur panneau de peuplier" } },
+            { title: "La Ronde de nuit", image: "la-ronde-de-nuit.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Frans Hals", "Rembrandt", "Johannes Vermeer"], correct: "Rembrandt" }, date: { question: "Date (Année) :", options: ["1610", "1675", "1642"], correct: "1642" }, taille: { question: "Taille (arrondi au cm) :", options: ["379 x 454 cm", "250 x 300 cm", "150 x 200 cm"], correct: "379 x 454 cm" }, technique: { question: "Technique :", options: ["Huile sur toile", "Technique mixte", "Huile sur bois"], correct: "Huile sur toile" } },
+            { title: "La Jeune Fille à la perle", image: "la-jeune-fille-a-la-perle.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Johannes Vermeer", "Pieter de Hooch", "Rembrandt"], correct: "Johannes Vermeer" }, date: { question: "Date (Année) :", options: ["1690", "1630", "1665"], correct: "1665" }, taille: { question: "Taille (arrondi au cm) :", options: ["45 x 40 cm", "70 x 60 cm", "30 x 25 cm"], correct: "45 x 40 cm" }, technique: { question: "Technique :", options: ["Aquarelle", "Huile sur toile", "Huile sur panneau"], correct: "Huile sur toile" } },
+            { title: "La Grande Vague de Kanagawa", image: "la-grande-vague-de-kanagawa.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Utagawa Hiroshige", "Toshusai Sharaku", "Katsushika Hokusai"], correct: "Katsushika Hokusai" }, date: { question: "Date (Année) :", options: ["1795", "1831", "1865"], correct: "1831" }, taille: { question: "Taille (arrondi au cm) :", options: ["50 x 70 cm", "26 x 38 cm", "15 x 20 cm"], correct: "26 x 38 cm" }, technique: { question: "Technique :", options: ["Huile sur toile", "Estampe (gravure sur bois, ukiyo-e)", "Peinture à l'encre sur soie"], correct: "Estampe (gravure sur bois, ukiyo-e)" } },
+            { title: "Impression, soleil levant", image: "impression-soleil-levant.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Claude Monet", "Camille Pissarro", "Pierre-Auguste Renoir"], correct: "Claude Monet" }, date: { question: "Date (Année) :", options: ["1885", "1860", "1872"], correct: "1872" }, taille: { question: "Taille (arrondi au cm) :", options: ["100 x 120 cm", "48 x 63 cm", "30 x 40 cm"], correct: "48 x 63 cm" }, technique: { question: "Technique :", options: ["Acrylique sur toile", "Pastel sur papier", "Huile sur toile"], correct: "Huile sur toile" } },
+            { title: "Le Penseur", image: "le-penseur.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Auguste Rodin", "Antoine Bourdelle", "Camille Claudel"], correct: "Auguste Rodin" }, date: { question: "Date (Année) :", options: ["1925", "1880", "1904"], correct: "1904" }, taille: { question: "Taille (arrondi au cm) :", options: ["80 x 40 x 50 cm", "300 x 150 x 200 cm", "189 x 98 x 140 cm"], correct: "189 x 98 x 140 cm" }, technique: { question: "Technique :", options: ["Sculpture en marbre", "Taille directe sur pierre", "Sculpture en bronze"], correct: "Sculpture en bronze" } },
+            { title: "La Nuit étoilée", image: "la-nuit-etoilee.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Edvard Munch", "Vincent van Gogh", "Paul Gauguin"], correct: "Vincent van Gogh" }, date: { question: "Date (Année) :", options: ["1878", "1889", "1901"], correct: "1889" }, taille: { question: "Taille (arrondi au cm) :", options: ["50 x 60 cm", "120 x 150 cm", "74 x 92 cm"], correct: "74 x 92 cm" }, technique: { question: "Technique :", options: ["Gouache sur papier", "Huile sur panneau", "Huile sur toile"], correct: "Huile sur toile" } },
+            { title: "Le Cri", image: "le-cri.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Edvard Munch", "Gustav Klimt", "Egon Schiele"], correct: "Edvard Munch" }, date: { question: "Date (Année) :", options: ["1880", "1893", "1905"], correct: "1893" }, taille: { question: "Taille (arrondi au cm) :", options: ["150 x 120 cm", "91 x 74 cm", "50 x 40 cm"], correct: "91 x 74 cm" }, technique: { question: "Technique :", options: ["Huile, tempera et pastel sur carton", "Huile sur toile", "Gravure sur bois"], correct: "Huile, tempera et pastel sur carton" } },
+            { title: "American Gothic", image: "american-gothic.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Georgia O'Keeffe", "Edward Hopper", "Grant Wood"], correct: "Grant Wood" }, date: { question: "Date (Année) :", options: ["1930", "1915", "1945"], correct: "1930" }, taille: { question: "Taille (arrondi au cm) :", options: ["110 x 90 cm", "50 x 40 cm", "78 x 65 cm"], correct: "78 x 65 cm" }, technique: { question: "Technique :", options: ["Huile sur panneau de beaverboard", "Acrylique sur toile", "Huile sur toile"], correct: "Huile sur panneau de beaverboard" } },
+            { title: "La Persistance de la mémoire", image: "la-persistance-de-la-memoire.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["René Magritte", "Max Ernst", "Salvador Dalí"], correct: "Salvador Dalí" }, date: { question: "Date (Année) :", options: ["1931", "1924", "1940"], correct: "1931" }, taille: { question: "Taille (arrondi au cm) :", options: ["60 x 80 cm", "100 x 120 cm", "24 x 33 cm"], correct: "24 x 33 cm" }, technique: { question: "Technique :", options: ["Huile sur toile", "Huile sur panneau de bois", "Gouache sur papier"], correct: "Huile sur toile" } },
+            { title: "Guernica", image: "guernica.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Salvador Dalí", "Joan Miró", "Pablo Picasso"], correct: "Pablo Picasso" }, date: { question: "Date (Année) :", options: ["1920", "1950", "1937"], correct: "1937" }, taille: { question: "Taille (arrondi au cm) :", options: ["349 x 776 cm", "150 x 300 cm", "200 x 400 cm"], correct: "349 x 776 cm" }, technique: { question: "Technique :", options: ["Acrylique et techniques mixtes", "Fresque murale", "Huile sur toile"], correct: "Huile sur toile" } },
+            { title: "Nighthawks", image: "nighthawks.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Jackson Pollock", "Grant Wood", "Edward Hopper"], correct: "Edward Hopper" }, date: { question: "Date (Année) :", options: ["1928", "1942", "1955"], correct: "1942" }, taille: { question: "Taille (arrondi au cm) :", options: ["84 x 153 cm", "120 x 200 cm", "50 x 90 cm"], correct: "84 x 153 cm" }, technique: { question: "Technique :", options: ["Huile sur toile", "Huile sur panneau", "Acrylique sur toile"], correct: "Huile sur toile" } },
+            { title: "Diptyque de Marilyn", image: "diptyque-de-marilyn.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Andy Warhol", "Roy Lichtenstein", "Keith Haring"], correct: "Andy Warhol" }, date: { question: "Date (Année) :", options: ["1975", "1962", "1950"], correct: "1962" }, taille: { question: "Taille (arrondi au cm) :", options: ["100 x 150 cm", "205 x 290 cm", "300 x 400 cm"], correct: "205 x 290 cm" }, technique: { question: "Technique :", options: ["Impression numérique", "Huile et acrylique", "Sérigraphie sur toile"], correct: "Sérigraphie sur toile" } },
+            { title: "Le Fils de l'homme", image: "le-fils-de-l-homme.jpg", auteur: { question: "Auteur de l'œuvre :", options: ["Paul Delvaux", "René Magritte", "Salvador Dalí"], correct: "René Magritte" }, date: { question: "Date (Année) :", options: ["1964", "1971", "1952"], correct: "1964" }, taille: { question: "Taille (arrondi au cm) :", options: ["116 x 89 cm", "150 x 120 cm", "70 x 50 cm"], correct: "116 x 89 cm" }, technique: { question: "Technique :", options: ["Huile sur toile", "Huile sur panneau", "Gouache sur papier"], correct: "Huile sur toile" } }
         ];
 
         let selectedPlayerIndex = null;
         let selectedTileId = null;
         let gameData = { count: 5, colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' }, names: {}, difficulty: 'easy' };
         
-        // Tracks visited colors per player: playerVisitedColors[playerIndex] = Set of colorIds
         let playerVisitedColors = {};
-
-        // Current active question session state
         let currentActiveArtwork = null;
         let currentActiveCategoryKey = null;
 
-        /**
-         * Initialize App Data safely
-         */
         function initApp() {
             loadGameData();
             renderPlayers();
         }
 
-        /**
-         * Load player data from localStorage or set defaults
-         */
         function loadGameData() {
             const stored = localStorage.getItem('bg_helper_game_players');
             if (stored) {
@@ -190,9 +91,6 @@
             }
         }
 
-        /**
-         * Render Player Selection Buttons
-         */
         function renderPlayers() {
             const container = document.getElementById('playersGrid');
             if (!container) return;
@@ -226,14 +124,10 @@
             }
         }
 
-        /**
-         * Handle Player Selection - Opens the "Quelle case ?" section
-         */
         function selectPlayer(index, colorObj, playerName) {
             selectedPlayerIndex = index;
             selectedTileId = null;
 
-            // Highlight selected player card
             document.querySelectorAll('.player-btn').forEach((btn, idx) => {
                 if (idx + 1 === index) {
                     btn.classList.remove('border-[#417E94]', 'bg-[#2D5766]');
@@ -244,20 +138,17 @@
                 }
             });
 
-            // Update active player hint label
             const label = document.getElementById('selectedPlayerLabel');
             if (label) {
                 label.textContent = `${playerName} (${colorObj.name})`;
             }
 
-            // Unhide "Quelle case ?" section
             const caseSection = document.getElementById('quelleCaseSection');
             if (caseSection) {
                 caseSection.classList.remove('hidden');
                 caseSection.classList.add('flex');
             }
 
-            // Hide action panel, question container and multicolor notice until tile selected
             const actionPanel = document.getElementById('actionPanel');
             if (actionPanel) actionPanel.classList.add('hidden');
 
@@ -270,9 +161,6 @@
             renderTiles();
         }
 
-        /**
-         * Render 6 Tile choices strictly after player click, taking into account blocked colors
-         */
         function renderTiles() {
             const container = document.getElementById('tilesGrid');
             if (!container) return;
@@ -318,7 +206,7 @@
                 btn.innerHTML = `
                     ${iconMarkup}
                     <div class="min-w-0 flex-1">
-                        <div class="text-xs font-bold leading-tight truncate">${tile.name} ${isBlocked ? '(Déjà fait)' : ''}</div>
+                        <div class="text-xs font-bold leading-tight truncate">${tile.name} ${isBlocked ? '(Deja fait)' : ''}</div>
                         <div class="text-[10px] font-medium uppercase tracking-wider opacity-90 truncate">${tile.category}</div>
                     </div>
                     <i class="fa-solid ${isBlocked ? 'fa-lock' : 'fa-circle-check opacity-0 check-tile-icon'} text-xs shrink-0"></i>
@@ -328,13 +216,9 @@
             });
         }
 
-        /**
-         * Handle Tile Selection
-         */
         function selectTile(tile) {
             selectedTileId = tile.id;
 
-            // Update UI tile selection visual state
             document.querySelectorAll('.tile-btn').forEach(btn => {
                 const icon = btn.querySelector('.check-tile-icon');
                 if (btn.id === `tile-btn-${tile.id}`) {
@@ -348,7 +232,6 @@
 
             const playerName = (gameData.names && gameData.names[selectedPlayerIndex]) ? gameData.names[selectedPlayerIndex] : `Joueur ${selectedPlayerIndex}`;
 
-            // Show/hide special revision notice if Multicouleur is clicked
             const multicolorNotice = document.getElementById('multicolorNotice');
             const questionContainer = document.getElementById('questionContainer');
 
@@ -360,11 +243,9 @@
                 if (questionContainer) questionContainer.classList.add('hidden');
             } else {
                 if (multicolorNotice) multicolorNotice.classList.add('hidden');
-                // Pick a random artwork and display question based on tile category
                 generateQuestionForTile(tile);
             }
 
-            // Reveal action panel
             const actionPanel = document.getElementById('actionPanel');
             const summaryText = document.getElementById('actionSummaryText');
 
@@ -375,13 +256,9 @@
             }
         }
 
-        /**
-         * Generate a random artwork question based on the selected color category
-         */
         function generateQuestionForTile(tile) {
-            currentActiveCategoryKey = tile.category; // 'auteur', 'date', 'taille', 'technique', or 'titre'
+            currentActiveCategoryKey = tile.category;
             
-            // Pick a random artwork from DB
             const randomIndex = Math.floor(Math.random() * ARTWORKS_DB.length);
             currentActiveArtwork = ARTWORKS_DB[randomIndex];
 
@@ -392,6 +269,7 @@
             questionContainer.classList.add('flex');
 
             const titleEl = document.getElementById('artworkTitleDisplay');
+            const imgEl = document.getElementById('artworkImgDisplay');
             const qTextEl = document.getElementById('questionTextDisplay');
             const optionsArea = document.getElementById('easyOptionsArea');
             const hardArea = document.getElementById('hardInputArea');
@@ -400,6 +278,11 @@
             if (feedbackEl) {
                 feedbackEl.innerHTML = '';
                 feedbackEl.className = 'hidden';
+            }
+
+            if (imgEl) {
+                imgEl.src = `assets/${currentActiveArtwork.image}`;
+                imgEl.alt = currentActiveArtwork.title;
             }
 
             if (titleEl) {
@@ -420,9 +303,7 @@
 
                     let qObj;
                     if (currentActiveCategoryKey === 'titre') {
-                        // Create 3 random title choices including the correct one
                         const otherTitles = ARTWORKS_DB.filter(a => a.title !== currentActiveArtwork.title).map(a => a.title);
-                        // Shuffle and pick 2 others
                         otherTitles.sort(() => Math.random() - 0.5);
                         let choices = [currentActiveArtwork.title, otherTitles[0], otherTitles[1]];
                         choices.sort(() => Math.random() - 0.5);
@@ -433,7 +314,6 @@
 
                     if (qTextEl) qTextEl.textContent = qObj.question;
 
-                    // Shuffle options for randomness
                     let randomizedOptions = [...qObj.options];
                     randomizedOptions.sort(() => Math.random() - 0.5);
 
@@ -447,7 +327,6 @@
                     });
                 }
             } else {
-                // HARD DIFFICULTY
                 if (optionsArea) optionsArea.classList.add('hidden');
                 if (hardArea) {
                     hardArea.classList.remove('hidden');
@@ -465,9 +344,6 @@
             }
         }
 
-        /**
-         * Check Easy difficulty answer (QCM)
-         */
         function checkEasyAnswer(selectedOption, correctOption) {
             const feedbackEl = document.getElementById('questionFeedback');
             if (!feedbackEl) return;
@@ -475,23 +351,19 @@
             feedbackEl.classList.remove('hidden');
 
             if (selectedOption === correctOption) {
-                // Mark color as visited for player
                 markColorAsVisited(selectedPlayerIndex, selectedTileId);
 
-                feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center animate-bounce';
+                feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center';
                 feedbackEl.innerHTML = `
-                    <div class="text-sm mb-1"><i class="fa-solid fa-circle-check"><b> Bonne réponse !</b></i></div>
+                    <div class="text-sm mb-1"><i class="fa-solid fa-circle-check"><b> Bonne reponse !</b></i></div>
                     <div class="text-white text-sm font-extrabold bg-emerald-600/60 py-1.5 px-3 rounded-lg mt-1 tracking-wide shadow">Allez dans une autre couleur</div>
                 `;
             } else {
                 feedbackEl.className = 'p-3 rounded-xl bg-rose-500/20 border border-rose-500 text-rose-200 text-xs font-semibold text-center';
-                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Mauvaise réponse. La bonne réponse était : <span class="font-bold text-white">${correctOption}</span>`;
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Mauvaise reponse. La bonne reponse etait : <span class="font-bold text-white">${correctOption}</span>`;
             }
         }
 
-        /**
-         * Check Hard difficulty answer (Text input with fuzzy matching)
-         */
         function submitHardAnswer() {
             const inputField = document.getElementById('hardAnswerInput');
             if (!inputField) return;
@@ -513,41 +385,34 @@
             feedbackEl.classList.remove('hidden');
 
             if (isCorrect) {
-                // Mark color as visited for player
                 markColorAsVisited(selectedPlayerIndex, selectedTileId);
 
-                feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center animate-bounce';
+                feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center';
                 feedbackEl.innerHTML = `
-                    <div class="text-sm mb-1"><i class="fa-solid fa-circle-check"><b> Bonne réponse !</b></i></div>
+                    <div class="text-sm mb-1"><i class="fa-solid fa-circle-check"><b> Bonne reponse !</b></i></div>
                     <div class="text-white text-sm font-extrabold bg-emerald-600/60 py-1.5 px-3 rounded-lg mt-1 tracking-wide shadow">Allez dans une autre couleur</div>
                 `;
             } else {
                 feedbackEl.className = 'p-3 rounded-xl bg-rose-500/20 border border-rose-500 text-rose-200 text-xs font-semibold text-center';
-                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Presque ! La réponse exacte attendue était : <span class="font-bold text-white">${correctVal}</span>`;
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Presque ! La reponse exacte attendue etait : <span class="font-bold text-white">${correctVal}</span>`;
             }
         }
 
-        /**
-         * Flexible string comparator for Hard difficulty (handles accents, case-insensitivity, typos/minor variations)
-         */
         function compareAnswersFlexible(userStr, correctStr) {
             const normalize = (str) => {
                 return str.toLowerCase()
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents
-                    .replace(/[^a-z0-9]/g, ""); // keep only alphanumeric
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-z0-9]/g, "");
             };
 
             const normUser = normalize(userStr);
             const normCorrect = normalize(correctStr);
 
             if (normUser === normCorrect) return true;
-
-            // Check if user answer is contained or vice versa for numbers/names (e.g. "Géraux" vs "Geraux" or "1498")
             if (normUser.length >= 3 && normCorrect.includes(normUser)) return true;
 
-            // Levenshtein distance simple check for minor typos
             const distance = levenshteinDistance(normUser, normCorrect);
-            const tolerance = Math.max(1, Math.floor(normCorrect.length * 0.25)); // 25% tolerance
+            const tolerance = Math.max(1, Math.floor(normCorrect.length * 0.25));
             return distance <= tolerance;
         }
 
@@ -569,15 +434,11 @@
             return matrix[b.length][a.length];
         }
 
-        /**
-         * Mark color as visited for a specific player so they can't go twice on the same color
-         */
         function markColorAsVisited(playerIdx, tileId) {
             if (!playerVisitedColors[playerIdx]) {
                 playerVisitedColors[playerIdx] = new Set();
             }
             playerVisitedColors[playerIdx].add(tileId);
-            // Refresh tiles grid so the newly completed color gets locked/blocked
             renderTiles();
         }
 
@@ -638,6 +499,11 @@
                 <div class="flex items-center justify-between">
                     <span id="artworkTitleDisplay" class="text-xs font-bold text-amber-300"></span>
                     <span class="text-[10px] uppercase font-semibold tracking-wider text-slate-400 bg-[#2D5766] px-2 py-0.5 rounded border border-[#417E94]">Défi Art</span>
+                </div>
+
+                <!-- Artwork Image Display from assets folder -->
+                <div class="w-full h-40 sm:h-48 bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-[#417E94]/50">
+                    <img id="artworkImgDisplay" src="" alt="Œuvre d'art" class="w-full h-full object-contain">
                 </div>
 
                 <div id="questionTextDisplay" class="text-xs font-semibold text-white leading-relaxed"></div>
