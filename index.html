@@ -37,6 +37,7 @@
 
         let selectedPlayerCount = 0;
         let playerColors = {};
+        let playerNames = {};
         let selectedDifficulty = null;
 
         /**
@@ -108,14 +109,16 @@
         }
 
         /**
-         * Render Color Selection per player
+         * Render Color Selection & Name Input per player
          */
         function renderColorSelection() {
             const container = document.getElementById('colorListContainer');
             container.innerHTML = '';
             playerColors = {};
+            playerNames = {};
 
             for (let i = 1; i <= selectedPlayerCount; i++) {
+                playerNames[i] = `Joueur ${i}`;
                 const pCard = document.createElement('div');
                 pCard.className = "bg-[#2D5766] border border-[#417E94]/80 rounded-2xl p-4 sm:p-5 space-y-3 shadow-lg";
                 
@@ -138,13 +141,17 @@
                 `).join('');
 
                 pCard.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-[#417E94]/60 pb-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#417E94]/60 pb-3 gap-2">
                         <span class="font-bold text-white flex items-center gap-2">
                             <i class="fa-solid fa-user text-[#65C3E6]"></i> Joueur ${i}
                         </span>
-                        <span id="p${i}-selected-label" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#1D3842] text-slate-300">
-                            Non sélectionné
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="input-name-${i}" value="Joueur ${i}" oninput="updatePlayerName(${i}, this.value)" placeholder="Nom du joueur"
+                                class="px-3 py-1 bg-[#1D3842] border border-[#417E94] rounded-lg text-xs font-semibold text-white focus:outline-none focus:border-[#65C3E6]">
+                            <span id="p${i}-selected-label" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#1D3842] text-slate-300 shrink-0">
+                                Non sélectionné
+                            </span>
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         ${colorsHTML}
@@ -154,6 +161,12 @@
             }
 
             updateButtonStates();
+            validateColors();
+        }
+
+        function updatePlayerName(playerNum, nameVal) {
+            const trimmed = nameVal.trim();
+            playerNames[playerNum] = trimmed !== '' ? trimmed : `Joueur ${playerNum}`;
             validateColors();
         }
 
@@ -227,7 +240,7 @@
         }
 
         /**
-         * Check if all players have selected unique colors
+         * Check if all players have selected unique colors and valid names
          */
         function validateColors() {
             const nextBtn = document.getElementById('toDifficultyBtn');
@@ -238,7 +251,15 @@
             const allSelected = chosen.length === selectedPlayerCount;
             const uniqueSelected = new Set(chosen).size === chosen.length;
 
-            if (allSelected && uniqueSelected) {
+            let allNamesValid = true;
+            for (let i = 1; i <= selectedPlayerCount; i++) {
+                if (!playerNames[i] || playerNames[i].trim() === '') {
+                    allNamesValid = false;
+                    break;
+                }
+            }
+
+            if (allSelected && uniqueSelected && allNamesValid) {
                 nextBtn.disabled = false;
                 nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 errWarn.classList.add('hidden');
@@ -246,6 +267,10 @@
                 nextBtn.disabled = true;
                 nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 if (allSelected && !uniqueSelected) {
+                    errWarn.textContent = "Chaque joueur doit avoir une couleur unique.";
+                    errWarn.classList.remove('hidden');
+                } else if (!allNamesValid) {
+                    errWarn.textContent = "Tous les joueurs doivent avoir un nom valide.";
                     errWarn.classList.remove('hidden');
                 } else {
                     errWarn.classList.add('hidden');
@@ -308,6 +333,7 @@
             localStorage.setItem('bg_helper_game_players', JSON.stringify({
                 count: selectedPlayerCount,
                 colors: playerColors,
+                names: playerNames,
                 difficulty: selectedDifficulty
             }));
 
@@ -326,9 +352,11 @@
                 const data = JSON.parse(stored);
                 selectedPlayerCount = data.count || 2;
                 playerColors = data.colors || {};
+                playerNames = data.names || {};
             } catch (e) {
                 selectedPlayerCount = 2;
                 playerColors = {};
+                playerNames = {};
             }
 
             const summary = document.getElementById('activePlayersSummary');
@@ -338,6 +366,7 @@
             for (let i = 1; i <= selectedPlayerCount; i++) {
                 const cId = playerColors[i];
                 const cObj = COLOR_OPTIONS.find(c => c.id === cId) || COLOR_OPTIONS[0];
+                const pName = playerNames[i] || `Joueur ${i}`;
                 
                 const chip = document.createElement('div');
                 chip.className = "flex items-center gap-3 bg-[#2D5766] border border-[#417E94]/60 px-4 py-2.5 rounded-xl shadow-sm";
@@ -348,7 +377,7 @@
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </div>
                     </div>
-                    <span class="font-semibold text-white">Joueur ${i}</span>
+                    <span class="font-semibold text-white">${pName}</span>
                     <span class="text-xs text-slate-300">(${cObj.name})</span>
                 `;
                 summary.appendChild(chip);
@@ -524,12 +553,12 @@
             </div>
         </section>
 
-        <!-- ==================== SCREEN 2: COLOR SELECTION ==================== -->
+        <!-- ==================== SCREEN 2: COLOR SELECTION & NAMES ==================== -->
         <section id="colorSelectionScreen" class="hidden w-full max-w-2xl bg-[#2D5766] border border-[#417E94] rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
             <div class="flex items-center justify-between border-b border-[#417E94]/60 pb-4">
                 <div>
-                    <h2 class="text-xl sm:text-2xl font-bold text-white">Couleurs des Joueurs</h2>
-                    <p class="text-xs sm:text-sm text-slate-300">Choisissez une couleur unique pour chaque joueur.</p>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">Noms et Couleurs</h2>
+                    <p class="text-xs sm:text-sm text-slate-300">Nommez chaque joueur et choisissez une couleur unique.</p>
                 </div>
                 <button onclick="showScreen('playerCountScreen')" class="text-xs text-slate-300 hover:text-white border border-[#417E94] bg-[#1D3842] px-3 py-1.5 rounded-lg transition">
                     <i class="fa-solid fa-arrow-left mr-1"></i> Retour
@@ -542,7 +571,7 @@
 
             <div class="space-y-3 pt-2">
                 <p id="colorConflictWarning" class="hidden text-rose-300 text-xs font-medium text-center flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Chaque joueur doit avoir une couleur unique.
+                    <i class="fa-solid fa-triangle-exclamation"></i> Assurez-vous d'avoir entré un nom et une couleur unique pour chaque joueur.
                 </p>
 
                 <button type="button" id="toDifficultyBtn" disabled onclick="goToDifficulty()"
