@@ -45,9 +45,125 @@
             isMulticolor: true
         };
 
+        // Database of 15 artworks and questions extracted from questions.docx
+        const ARTWORKS_DB = [
+            {
+                title: "La Cène",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Raphaël", "Michel-Ange", "Léonard de Vinci"], correct: "Léonard de Vinci" },
+                date: { question: "Date (Année) :", options: ["1515", "1425", "1498"], correct: "1498" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["300 x 500 cm", "460 x 880 cm", "200 x 300 cm"], correct: "460 x 880 cm" },
+                technique: { question: "Technique :", options: ["Huile sur toile", "Peinture murale (tempera et huile sur plâtre)", "Fresque"], correct: "Peinture murale (tempera et huile sur plâtre)" }
+            },
+            {
+                title: "La Joconde",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Léonard de Vinci", "Le Caravage", "Sandro Botticelli"], correct: "Léonard de Vinci" },
+                date: { question: "Date (Année) :", options: ["1485", "1503", "1540"], correct: "1503" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["45 x 35 cm", "77 x 53 cm", "120 x 90 cm"], correct: "77 x 53 cm" },
+                technique: { question: "Technique :", options: ["Huile sur panneau de peuplier", "Huile sur toile", "Détrempe sur bois"], correct: "Huile sur panneau de peuplier" }
+            },
+            {
+                title: "La Ronde de nuit",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Frans Hals", "Rembrandt", "Johannes Vermeer"], correct: "Rembrandt" },
+                date: { question: "Date (Année) :", options: ["1610", "1675", "1642"], correct: "1642" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["379 x 454 cm", "250 x 300 cm", "150 x 200 cm"], correct: "379 x 454 cm" },
+                technique: { question: "Technique :", options: ["Huile sur toile", "Technique mixte", "Huile sur bois"], correct: "Huile sur toile" }
+            },
+            {
+                title: "La Jeune Fille à la perle",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Johannes Vermeer", "Pieter de Hooch", "Rembrandt"], correct: "Johannes Vermeer" },
+                date: { question: "Date (Année) :", options: ["1690", "1630", "1665"], correct: "1665" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["45 x 40 cm", "70 x 60 cm", "30 x 25 cm"], correct: "45 x 40 cm" },
+                technique: { question: "Technique :", options: ["Aquarelle", "Huile sur toile", "Huile sur panneau"], correct: "Huile sur toile" }
+            },
+            {
+                title: "La Grande Vague de Kanagawa",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Utagawa Hiroshige", "Toshusai Sharaku", "Katsushika Hokusai"], correct: "Katsushika Hokusai" },
+                date: { question: "Date (Année) :", options: ["1795", "1831", "1865"], correct: "1831" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["50 x 70 cm", "26 x 38 cm", "15 x 20 cm"], correct: "26 x 38 cm" },
+                technique: { question: "Technique :", options: ["Huile sur toile", "Estampe (gravure sur bois, ukiyo-e)", "Peinture à l'encre sur soie"], correct: "Estampe (gravure sur bois, ukiyo-e)" }
+            },
+            {
+                title: "Impression, soleil levant",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Claude Monet", "Camille Pissarro", "Pierre-Auguste Renoir"], correct: "Claude Monet" },
+                date: { question: "Date (Année) :", options: ["1885", "1860", "1872"], correct: "1872" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["100 x 120 cm", "48 x 63 cm", "30 x 40 cm"], correct: "48 x 63 cm" },
+                technique: { question: "Technique :", options: ["Acrylique sur toile", "Pastel sur papier", "Huile sur toile"], correct: "Huile sur toile" }
+            },
+            {
+                title: "Le Penseur",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Auguste Rodin", "Antoine Bourdelle", "Camille Claudel"], correct: "Auguste Rodin" },
+                date: { question: "Date (Année) :", options: ["1925", "1880", "1904"], correct: "1904" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["80 x 40 x 50 cm", "300 x 150 x 200 cm", "189 x 98 x 140 cm"], correct: "189 x 98 x 140 cm" },
+                technique: { question: "Technique :", options: ["Sculpture en marbre", "Taille directe sur pierre", "Sculpture en bronze"], correct: "Sculpture en bronze" }
+            },
+            {
+                title: "La Nuit étoilée",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Edvard Munch", "Vincent van Gogh", "Paul Gauguin"], correct: "Vincent van Gogh" },
+                date: { question: "Date (Année) :", options: ["1878", "1889", "1901"], correct: "1889" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["50 x 60 cm", "120 x 150 cm", "74 x 92 cm"], correct: "74 x 92 cm" },
+                technique: { question: "Technique :", options: ["Gouache sur papier", "Huile sur panneau", "Huile sur toile"], correct: "Huile sur toile" }
+            },
+            {
+                title: "Le Cri",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Edvard Munch", "Gustav Klimt", "Egon Schiele"], correct: "Edvard Munch" },
+                date: { question: "Date (Année) :", options: ["1880", "1893", "1905"], correct: "1893" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["150 x 120 cm", "91 x 74 cm", "50 x 40 cm"], correct: "91 x 74 cm" },
+                technique: { question: "Technique :", options: ["Huile, tempera et pastel sur carton", "Huile sur toile", "Gravure sur bois"], correct: "Huile, tempera et pastel sur carton" }
+            },
+            {
+                title: "American Gothic",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Georgia O'Keeffe", "Edward Hopper", "Grant Wood"], correct: "Grant Wood" },
+                date: { question: "Date (Année) :", options: ["1930", "1915", "1945"], correct: "1930" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["110 x 90 cm", "50 x 40 cm", "78 x 65 cm"], correct: "78 x 65 cm" },
+                technique: { question: "Technique :", options: ["Huile sur panneau de beaverboard", "Acrylique sur toile", "Huile sur toile"], correct: "Huile sur panneau de beaverboard" }
+            },
+            {
+                title: "La Persistance de la mémoire",
+                auteur: { question: "Auteur de l'œuvre :", options: ["René Magritte", "Max Ernst", "Salvador Dalí"], correct: "Salvador Dalí" },
+                date: { question: "Date (Année) :", options: ["1931", "1924", "1940"], correct: "1931" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["60 x 80 cm", "100 x 120 cm", "24 x 33 cm"], correct: "24 x 33 cm" },
+                technique: { question: "Technique :", options: ["Huile sur toile", "Huile sur panneau de bois", "Gouache sur papier"], correct: "Huile sur toile" }
+            },
+            {
+                title: "Guernica",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Salvador Dalí", "Joan Miró", "Pablo Picasso"], correct: "Pablo Picasso" },
+                date: { question: "Date (Année) :", options: ["1920", "1950", "1937"], correct: "1937" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["349 x 776 cm", "150 x 300 cm", "200 x 400 cm"], correct: "349 x 776 cm" },
+                technique: { question: "Technique :", options: ["Acrylique et techniques mixtes", "Fresque murale", "Huile sur toile"], correct: "Huile sur toile" }
+            },
+            {
+                title: "Nighthawks",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Jackson Pollock", "Grant Wood", "Edward Hopper"], correct: "Edward Hopper" },
+                date: { question: "Date (Année) :", options: ["1928", "1942", "1955"], correct: "1942" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["84 x 153 cm", "120 x 200 cm", "50 x 90 cm"], correct: "84 x 153 cm" },
+                technique: { question: "Technique :", options: ["Huile sur toile", "Huile sur panneau", "Acrylique sur toile"], correct: "Huile sur toile" }
+            },
+            {
+                title: "Diptyque de Marilyn",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Andy Warhol", "Roy Lichtenstein", "Keith Haring"], correct: "Andy Warhol" },
+                date: { question: "Date (Année) :", options: ["1975", "1962", "1950"], correct: "1962" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["100 x 150 cm", "205 x 290 cm", "300 x 400 cm"], correct: "205 x 290 cm" },
+                technique: { question: "Technique :", options: ["Impression numérique", "Huile et acrylique", "Sérigraphie sur toile"], correct: "Sérigraphie sur toile" }
+            },
+            {
+                title: "Le Fils de l'homme",
+                auteur: { question: "Auteur de l'œuvre :", options: ["Paul Delvaux", "René Magritte", "Salvador Dalí"], correct: "René Magritte" },
+                date: { question: "Date (Année) :", options: ["1964", "1971", "1952"], correct: "1964" },
+                taille: { question: "Taille (arrondi au cm) :", options: ["116 x 89 cm", "150 x 120 cm", "70 x 50 cm"], correct: "116 x 89 cm" },
+                technique: { question: "Technique :", options: ["Huile sur toile", "Huile sur panneau", "Gouache sur papier"], correct: "Huile sur toile" }
+            }
+        ];
+
         let selectedPlayerIndex = null;
         let selectedTileId = null;
         let gameData = { count: 5, colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' }, names: {}, difficulty: 'easy' };
+        
+        // Tracks visited colors per player: playerVisitedColors[playerIndex] = Set of colorIds
+        let playerVisitedColors = {};
+
+        // Current active question session state
+        let currentActiveArtwork = null;
+        let currentActiveCategoryKey = null;
 
         /**
          * Initialize App Data safely
@@ -141,9 +257,12 @@
                 caseSection.classList.add('flex');
             }
 
-            // Hide action panel and multicolor notice until tile selected
+            // Hide action panel, question container and multicolor notice until tile selected
             const actionPanel = document.getElementById('actionPanel');
             if (actionPanel) actionPanel.classList.add('hidden');
+
+            const questionContainer = document.getElementById('questionContainer');
+            if (questionContainer) questionContainer.classList.add('hidden');
 
             const multicolorNotice = document.getElementById('multicolorNotice');
             if (multicolorNotice) multicolorNotice.classList.add('hidden');
@@ -152,7 +271,7 @@
         }
 
         /**
-         * Render 6 Tile choices strictly after player click
+         * Render 6 Tile choices strictly after player click, taking into account blocked colors
          */
         function renderTiles() {
             const container = document.getElementById('tilesGrid');
@@ -160,16 +279,23 @@
             container.innerHTML = '';
 
             const allTiles = [...COLOR_OPTIONS, MULTICOLOR_TILE];
+            const visitedSet = (playerVisitedColors[selectedPlayerIndex]) || new Set();
 
             allTiles.forEach(tile => {
+                const isBlocked = !tile.isMulticolor && visitedSet.has(tile.id);
+
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.id = `tile-btn-${tile.id}`;
-                btn.onclick = () => selectTile(tile);
+                
+                if (isBlocked) {
+                    btn.disabled = true;
+                    btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-600 bg-slate-800/50 text-slate-400 opacity-60 cursor-not-allowed text-left w-full`;
+                } else {
+                    btn.onclick = () => selectTile(tile);
+                    btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl border border-white/20 ${tile.bgClass} text-white shadow-md transition cursor-pointer text-left w-full hover:brightness-110`;
+                }
 
-                btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl border border-white/20 ${tile.bgClass} text-white shadow-md transition cursor-pointer text-left w-full hover:brightness-110`;
-
-                // Custom icon representation: 5-color layout grid for Multicouleur tile (Jaune en haut à droite, Vert en bas à droite)
                 let iconMarkup = '';
                 if (tile.isMulticolor) {
                     iconMarkup = `
@@ -192,10 +318,10 @@
                 btn.innerHTML = `
                     ${iconMarkup}
                     <div class="min-w-0 flex-1">
-                        <div class="text-xs font-bold leading-tight truncate">${tile.name}</div>
+                        <div class="text-xs font-bold leading-tight truncate">${tile.name} ${isBlocked ? '(Déjà fait)' : ''}</div>
                         <div class="text-[10px] font-medium uppercase tracking-wider opacity-90 truncate">${tile.category}</div>
                     </div>
-                    <i class="fa-solid fa-circle-check opacity-0 check-tile-icon text-xs shrink-0"></i>
+                    <i class="fa-solid ${isBlocked ? 'fa-lock' : 'fa-circle-check opacity-0 check-tile-icon'} text-xs shrink-0"></i>
                 `;
 
                 container.appendChild(btn);
@@ -224,13 +350,18 @@
 
             // Show/hide special revision notice if Multicouleur is clicked
             const multicolorNotice = document.getElementById('multicolorNotice');
-            if (multicolorNotice) {
-                if (tile.id === 'multicolor') {
+            const questionContainer = document.getElementById('questionContainer');
+
+            if (tile.id === 'multicolor') {
+                if (multicolorNotice) {
                     multicolorNotice.textContent = `${playerName} peut réviser jusqu'à son prochain tour !`;
                     multicolorNotice.classList.remove('hidden');
-                } else {
-                    multicolorNotice.classList.add('hidden');
                 }
+                if (questionContainer) questionContainer.classList.add('hidden');
+            } else {
+                if (multicolorNotice) multicolorNotice.classList.add('hidden');
+                // Pick a random artwork and display question based on tile category
+                generateQuestionForTile(tile);
             }
 
             // Reveal action panel
@@ -242,6 +373,212 @@
                 actionPanel.classList.remove('hidden');
                 actionPanel.classList.add('flex');
             }
+        }
+
+        /**
+         * Generate a random artwork question based on the selected color category
+         */
+        function generateQuestionForTile(tile) {
+            currentActiveCategoryKey = tile.category; // 'auteur', 'date', 'taille', 'technique', or 'titre'
+            
+            // Pick a random artwork from DB
+            const randomIndex = Math.floor(Math.random() * ARTWORKS_DB.length);
+            currentActiveArtwork = ARTWORKS_DB[randomIndex];
+
+            const questionContainer = document.getElementById('questionContainer');
+            if (!questionContainer) return;
+
+            questionContainer.classList.remove('hidden');
+            questionContainer.classList.add('flex');
+
+            const titleEl = document.getElementById('artworkTitleDisplay');
+            const qTextEl = document.getElementById('questionTextDisplay');
+            const optionsArea = document.getElementById('easyOptionsArea');
+            const hardArea = document.getElementById('hardInputArea');
+            const feedbackEl = document.getElementById('questionFeedback');
+
+            if (feedbackEl) {
+                feedbackEl.innerHTML = '';
+                feedbackEl.className = 'hidden';
+            }
+
+            if (titleEl) {
+                if (currentActiveCategoryKey === 'titre') {
+                    titleEl.innerHTML = `<span class="italic text-emerald-300">Œuvre mystère (Devinez le titre)</span>`;
+                } else {
+                    titleEl.innerHTML = `Œuvre : <span class="font-bold text-amber-200">${currentActiveArtwork.title}</span>`;
+                }
+            }
+
+            const currentDifficulty = gameData.difficulty || 'easy';
+
+            if (currentDifficulty === 'easy') {
+                if (hardArea) hardArea.classList.add('hidden');
+                if (optionsArea) {
+                    optionsArea.classList.remove('hidden');
+                    optionsArea.innerHTML = '';
+
+                    let qObj;
+                    if (currentActiveCategoryKey === 'titre') {
+                        // Create 3 random title choices including the correct one
+                        const otherTitles = ARTWORKS_DB.filter(a => a.title !== currentActiveArtwork.title).map(a => a.title);
+                        // Shuffle and pick 2 others
+                        otherTitles.sort(() => Math.random() - 0.5);
+                        let choices = [currentActiveArtwork.title, otherTitles[0], otherTitles[1]];
+                        choices.sort(() => Math.random() - 0.5);
+                        qObj = { question: "Quel est le titre de cette œuvre ?", options: choices, correct: currentActiveArtwork.title };
+                    } else {
+                        qObj = currentActiveArtwork[currentActiveCategoryKey];
+                    }
+
+                    if (qTextEl) qTextEl.textContent = qObj.question;
+
+                    // Shuffle options for randomness
+                    let randomizedOptions = [...qObj.options];
+                    randomizedOptions.sort(() => Math.random() - 0.5);
+
+                    randomizedOptions.forEach(opt => {
+                        const optBtn = document.createElement('button');
+                        optBtn.type = 'button';
+                        optBtn.className = 'w-full text-left p-2.5 rounded-xl bg-[#1D3842] hover:bg-[#417E94] border border-[#417E94] text-xs font-semibold text-white transition shadow-sm';
+                        optBtn.textContent = opt;
+                        optBtn.onclick = () => checkEasyAnswer(opt, qObj.correct);
+                        optionsArea.appendChild(optBtn);
+                    });
+                }
+            } else {
+                // HARD DIFFICULTY
+                if (optionsArea) optionsArea.classList.add('hidden');
+                if (hardArea) {
+                    hardArea.classList.remove('hidden');
+                    let qObj;
+                    if (currentActiveCategoryKey === 'titre') {
+                        qObj = { question: "Quel est le titre de cette œuvre ?", correct: currentActiveArtwork.title };
+                    } else {
+                        qObj = currentActiveArtwork[currentActiveCategoryKey];
+                    }
+                    if (qTextEl) qTextEl.textContent = qObj.question;
+
+                    const inputField = document.getElementById('hardAnswerInput');
+                    if (inputField) inputField.value = '';
+                }
+            }
+        }
+
+        /**
+         * Check Easy difficulty answer (QCM)
+         */
+        function checkEasyAnswer(selectedOption, correctOption) {
+            const feedbackEl = document.getElementById('questionFeedback');
+            if (!feedbackEl) return;
+
+            feedbackEl.classList.remove('hidden');
+
+            if (selectedOption === correctOption) {
+                // Mark color as visited for player
+                markColorAsVisited(selectedPlayerIndex, selectedTileId);
+
+                feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center animate-bounce';
+                feedbackEl.innerHTML = `
+                    <div class="text-sm mb-1"><i class="fa-solid fa-circle-check"><b> Bonne réponse !</b></i></div>
+                    <div class="text-white text-sm font-extrabold bg-emerald-600/60 py-1.5 px-3 rounded-lg mt-1 tracking-wide shadow">Allez dans une autre couleur</div>
+                `;
+            } else {
+                feedbackEl.className = 'p-3 rounded-xl bg-rose-500/20 border border-rose-500 text-rose-200 text-xs font-semibold text-center';
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Mauvaise réponse. La bonne réponse était : <span class="font-bold text-white">${correctOption}</span>`;
+            }
+        }
+
+        /**
+         * Check Hard difficulty answer (Text input with fuzzy matching)
+         */
+        function submitHardAnswer() {
+            const inputField = document.getElementById('hardAnswerInput');
+            if (!inputField) return;
+
+            const userVal = inputField.value.trim();
+            if (!userVal) return;
+
+            let correctVal = '';
+            if (currentActiveCategoryKey === 'titre') {
+                correctVal = currentActiveArtwork.title;
+            } else {
+                correctVal = currentActiveArtwork[currentActiveCategoryKey].correct;
+            }
+
+            const isCorrect = compareAnswersFlexible(userVal, correctVal);
+            const feedbackEl = document.getElementById('questionFeedback');
+            if (!feedbackEl) return;
+
+            feedbackEl.classList.remove('hidden');
+
+            if (isCorrect) {
+                // Mark color as visited for player
+                markColorAsVisited(selectedPlayerIndex, selectedTileId);
+
+                feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center animate-bounce';
+                feedbackEl.innerHTML = `
+                    <div class="text-sm mb-1"><i class="fa-solid fa-circle-check"><b> Bonne réponse !</b></i></div>
+                    <div class="text-white text-sm font-extrabold bg-emerald-600/60 py-1.5 px-3 rounded-lg mt-1 tracking-wide shadow">Allez dans une autre couleur</div>
+                `;
+            } else {
+                feedbackEl.className = 'p-3 rounded-xl bg-rose-500/20 border border-rose-500 text-rose-200 text-xs font-semibold text-center';
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Presque ! La réponse exacte attendue était : <span class="font-bold text-white">${correctVal}</span>`;
+            }
+        }
+
+        /**
+         * Flexible string comparator for Hard difficulty (handles accents, case-insensitivity, typos/minor variations)
+         */
+        function compareAnswersFlexible(userStr, correctStr) {
+            const normalize = (str) => {
+                return str.toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents
+                    .replace(/[^a-z0-9]/g, ""); // keep only alphanumeric
+            };
+
+            const normUser = normalize(userStr);
+            const normCorrect = normalize(correctStr);
+
+            if (normUser === normCorrect) return true;
+
+            // Check if user answer is contained or vice versa for numbers/names (e.g. "Géraux" vs "Geraux" or "1498")
+            if (normUser.length >= 3 && normCorrect.includes(normUser)) return true;
+
+            // Levenshtein distance simple check for minor typos
+            const distance = levenshteinDistance(normUser, normCorrect);
+            const tolerance = Math.max(1, Math.floor(normCorrect.length * 0.25)); // 25% tolerance
+            return distance <= tolerance;
+        }
+
+        function levenshteinDistance(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+            for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        /**
+         * Mark color as visited for a specific player so they can't go twice on the same color
+         */
+        function markColorAsVisited(playerIdx, tileId) {
+            if (!playerVisitedColors[playerIdx]) {
+                playerVisitedColors[playerIdx] = new Set();
+            }
+            playerVisitedColors[playerIdx].add(tileId);
+            // Refresh tiles grid so the newly completed color gets locked/blocked
+            renderTiles();
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
@@ -295,6 +632,33 @@
                     <span id="actionSummaryText" class="text-xs text-slate-200 truncate"></span>
                 </div>
             </div>
+
+            <!-- ==================== SECTION 3: QUESTIONNAIRE ARTISTIQUE ==================== -->
+            <div id="questionContainer" class="hidden flex-col gap-2.5 bg-[#1D3842] border border-[#417E94] rounded-xl p-3 shadow-inner">
+                <div class="flex items-center justify-between">
+                    <span id="artworkTitleDisplay" class="text-xs font-bold text-amber-300"></span>
+                    <span class="text-[10px] uppercase font-semibold tracking-wider text-slate-400 bg-[#2D5766] px-2 py-0.5 rounded border border-[#417E94]">Défi Art</span>
+                </div>
+
+                <div id="questionTextDisplay" class="text-xs font-semibold text-white leading-relaxed"></div>
+
+                <!-- Easy Mode (3 Options QCM) -->
+                <div id="easyOptionsArea" class="flex flex-col gap-1.5 hidden">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Hard Mode (Text Input with fuzzy tolerance) -->
+                <div id="hardInputArea" class="flex flex-col gap-2 hidden">
+                    <div class="flex gap-2">
+                        <input type="text" id="hardAnswerInput" placeholder="Écrivez votre réponse..." class="flex-1 bg-[#2D5766] border border-[#417E94] rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#65C3E6]">
+                        <button type="button" onclick="submitHardAnswer()" class="bg-[#65C3E6] hover:bg-[#417E94] text-[#1D3842] hover:text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow">Valider</button>
+                    </div>
+                </div>
+
+                <!-- Feedback & Success Message -->
+                <div id="questionFeedback" class="hidden"></div>
+            </div>
+
         </section>
 
     </main>
