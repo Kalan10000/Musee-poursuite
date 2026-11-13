@@ -63,10 +63,8 @@
         let selectedTileId = null;
         let gameData = { count: 5, colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' }, names: {}, difficulty: 'easy' };
         
-        // Suivi par joueur
-        let playerSuccessColors = {}; // Set des couleurs réussies (deviennent vert clair)
-        let playerFailedColors = {};  // Set des couleurs échouées récemment (gris/rouge bloqués tant qu'on ne change pas)
-        let activePlayerCurrentTile = {}; // Mémorise la case en cours d'essai pour chaque joueur
+        let playerSuccessColors = {}; 
+        let playerFailedColor = {}; // Mémorise la dernière couleur échouée pour le joueur (bloquée temporairement)
 
         let currentActiveArtwork = null;
         let currentActiveCategoryKey = null;
@@ -171,25 +169,23 @@
 
             const allTiles = [...COLOR_OPTIONS, MULTICOLOR_TILE];
             const successSet = playerSuccessColors[selectedPlayerIndex] || new Set();
-            const failedSet = playerFailedColors[selectedPlayerIndex] || new Set();
-            const currentTile = activePlayerCurrentTile[selectedPlayerIndex];
+            const failedColorId = playerFailedColor[selectedPlayerIndex];
 
             allTiles.forEach(tile => {
                 const isSuccess = successSet.has(tile.id);
-                const isFailed = failedSet.has(tile.id);
-                // Bloqué si c'est la couleur échouée qu'on n'a pas encore quittée/changée
-                const isBlocked = !tile.isMulticolor && (isSuccess || isFailed);
+                // Bloqué uniquement si c'est la couleur qui vient d'être ratée
+                const isFailedBlock = (tile.id === failedColorId);
 
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.id = `tile-btn-${tile.id}`;
                 
                 if (isSuccess) {
-                    // Victoire sur cette couleur : Vert clair, impossible de recliquer tant qu'on ne change pas ou définitivement validé
+                    // Vert clair validé
                     btn.disabled = true;
                     btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl border border-emerald-400 bg-emerald-600 text-white shadow-md text-left w-full cursor-default`;
-                } else if (isFailed) {
-                    // Échec récent : Grisé en rouge, bloqué
+                } else if (isFailedBlock) {
+                    // Grisé en rouge car c'est l'erreur active (bloqué tant qu'on teste pas une autre couleur ou révision)
                     btn.disabled = true;
                     btn.className = `tile-btn flex items-center gap-2.5 p-2.5 rounded-xl border border-rose-500 bg-rose-950/60 text-rose-300 opacity-80 cursor-not-allowed text-left w-full`;
                 } else {
@@ -218,7 +214,7 @@
 
                 let statusText = '';
                 if (isSuccess) statusText = '(Réussi)';
-                if (isFailed) statusText = '(Bloqué - Essayez une autre)';
+                if (isFailedBlock) statusText = '(Bloqué - Testez une autre)';
 
                 btn.innerHTML = `
                     ${iconMarkup}
@@ -226,7 +222,7 @@
                         <div class="text-xs font-bold leading-tight truncate">${tile.name} ${statusText}</div>
                         <div class="text-[10px] font-medium uppercase tracking-wider opacity-90 truncate">${tile.category}</div>
                     </div>
-                    <i class="fa-solid ${isSuccess ? 'fa-check' : (isFailed ? 'fa-lock' : 'fa-circle-check opacity-0 check-tile-icon')} text-xs shrink-0"></i>
+                    <i class="fa-solid ${isSuccess ? 'fa-check' : (isFailedBlock ? 'fa-lock' : 'fa-circle-check opacity-0 check-tile-icon')} text-xs shrink-0"></i>
                 `;
 
                 container.appendChild(btn);
@@ -234,11 +230,10 @@
         }
 
         function selectTile(tile) {
-            // Si le joueur clique sur une nouvelle couleur, on libère le blocage de l'échec précédent s'il y en avait un
-            if (playerFailedColors[selectedPlayerIndex]) {
-                playerFailedColors[selectedPlayerIndex].delete(tile.id);
-            }
-            activePlayerCurrentTile[selectedPlayerIndex] = tile.id;
+            // Dès qu'on clique sur N'IMPORTE QUELLE autre couleur ou sur la révision, 
+            // cela débloque l'ancienne erreur (on retire le blocage rouge de l'essai précédent)
+            playerFailedColor[selectedPlayerIndex] = null;
+
             selectedTileId = tile.id;
 
             document.querySelectorAll('.tile-btn').forEach(btn => {
@@ -259,7 +254,7 @@
 
             if (tile.id === 'multicolor') {
                 if (multicolorNotice) {
-                    multicolorNotice.textContent = `${playerName} peut réviser jusqu'à son prochain tour !`;
+                    multicolorNotice.textContent = `${playerName} peut réviser jusqu'à son prochain tour ! (Débloqué)`;
                     multicolorNotice.classList.remove('hidden');
                 }
                 if (questionContainer) questionContainer.classList.add('hidden');
@@ -276,6 +271,9 @@
                 actionPanel.classList.remove('hidden');
                 actionPanel.classList.add('flex');
             }
+
+            // Rafraîchir les tuiles pour enlever le grisé/rouge de l'ancien échec puisque l'on vient d'en tester une autre
+            renderTiles();
         }
 
         function generateQuestionForTile(tile) {
@@ -333,7 +331,6 @@
                         qObj = { question: "Quel est le titre de cette œuvre ?", options: choices, correct: currentActiveArtwork.title };
                     } else {
                         const correctVal = currentActiveArtwork[currentActiveCategoryKey].correct;
-                        // Générer 3 options aléatoires pour cette catégorie parmi les 15 œuvres
                         let pool = ARTWORKS_DB.map(a => a[currentActiveCategoryKey].correct).filter(val => val !== correctVal);
                         pool.sort(() => Math.random() - 0.5);
                         let choices = [correctVal, pool[0], pool[1]];
@@ -353,7 +350,6 @@
                     });
                 }
             } else {
-                // HARD DIFFICULTY (Niveau compliqué : choix entre les 15 options de réponses possibles pour cette catégorie en ordre aléatoire)
                 if (optionsArea) optionsArea.classList.add('hidden');
                 if (hardArea) {
                     hardArea.classList.remove('hidden');
@@ -368,14 +364,12 @@
                     }
                     if (qTextEl) qTextEl.textContent = qObj.question;
 
-                    // Remplir le menu déroulant / select avec les 15 options mélangées
                     const selectEl = document.getElementById('hardSelectAnswer');
                     if (selectEl) {
                         selectEl.innerHTML = `<option value="" disabled selected>-- Choisissez parmi les 15 options --</option>`;
                         let allOptionsPool = ARTWORKS_DB.map(a => currentActiveCategoryKey === 'titre' ? a.title : a[currentActiveCategoryKey].correct);
-                        // Dédoublonner au cas où
                         allOptionsPool = [...new Set(allOptionsPool)];
-                        allOptionsPool.sort(() => Math.random() - 0.5); // Ordre aléatoire
+                        allOptionsPool.sort(() => Math.random() - 0.5);
 
                         allOptionsPool.forEach(optVal => {
                             const optElem = document.createElement('option');
@@ -413,12 +407,12 @@
                 feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center';
                 feedbackEl.innerHTML = `
                     <div class="text-sm mb-1"><i class="fa-solid fa-circle-check"><b> Bonne reponse !</b></i></div>
-                    <div class="text-white text-sm font-extrabold bg-emerald-600/60 py-1.5 px-3 rounded-lg mt-1 tracking-wide shadow">Couleur validee en VERT ! Allez dans une autre couleur</div>
+                    <div class="text-white text-sm font-extrabold bg-emerald-600/60 py-1.5 px-3 rounded-lg mt-1 tracking-wide shadow">Couleur validee en VERT !</div>
                 `;
             } else {
                 markColorAsFailed(selectedPlayerIndex, selectedTileId);
                 feedbackEl.className = 'p-3 rounded-xl bg-rose-500/20 border border-rose-500 text-rose-200 text-xs font-semibold text-center';
-                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Mauvaise reponse. La bonne reponse etait : <span class="font-bold text-white">${correctOption}</span><div class="mt-2 text-rose-300 font-bold">Case grisee en ROUGE et bloquee ! Allez sur une autre couleur.</div>`;
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Mauvaise reponse. La bonne reponse etait : <span class="font-bold text-white">${correctOption}</span><div class="mt-2 text-rose-300 font-bold">Case grisee en ROUGE ! Testez une autre couleur ou revision pour debloquer.</div>`;
             }
         }
 
@@ -456,12 +450,12 @@
                 feedbackEl.className = 'p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-200 text-xs font-bold text-center';
                 feedbackEl.innerHTML = `
                     <div class="text-sm mb-1"><i class="fa-solid fa-circle-check"><b> Bonne reponse !</b></i></div>
-                    <div class="text-white text-sm font-extrabold bg-emerald-600/60 py-1.5 px-3 rounded-lg mt-1 tracking-wide shadow">Couleur validee en VERT ! Allez dans une autre couleur</div>
+                    <div class="text-white text-sm font-extrabold bg-emerald-600/60 py-1.5 px-3 rounded-lg mt-1 tracking-wide shadow">Couleur validee en VERT !</div>
                 `;
             } else {
                 markColorAsFailed(selectedPlayerIndex, selectedTileId);
                 feedbackEl.className = 'p-3 rounded-xl bg-rose-500/20 border border-rose-500 text-rose-200 text-xs font-semibold text-center';
-                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Mauvaise reponse. La reponse exacte etait : <span class="font-bold text-white">${correctVal}</span><div class="mt-2 text-rose-300 font-bold">Case grisee en ROUGE et bloquee ! Allez sur une autre couleur.</div>`;
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Mauvaise reponse. La reponse exacte etait : <span class="font-bold text-white">${correctVal}</span><div class="mt-2 text-rose-300 font-bold">Case grisee en ROUGE ! Testez une autre couleur ou revision pour debloquer.</div>`;
             }
         }
 
@@ -470,16 +464,11 @@
                 playerSuccessColors[playerIdx] = new Set();
             }
             playerSuccessColors[playerIdx].add(tileId);
-            
-            // Retirer des échecs si présent
-            if (playerFailedColors[playerIdx]) {
-                playerFailedColors[playerIdx].delete(tileId);
-            }
+            playerFailedColor[playerIdx] = null; // Nettoyer l'échec
 
             renderTiles();
-            renderPlayers(); // Met à jour le score et vérifie si tout est fini
+            renderPlayers();
 
-            // Vérifier condition de victoire globale (5 couleurs validées)
             if (playerSuccessColors[playerIdx].size >= 5) {
                 const playerName = (gameData.names && gameData.names[playerIdx]) ? gameData.names[playerIdx] : `Joueur ${playerIdx}`;
                 setTimeout(() => {
@@ -489,10 +478,7 @@
         }
 
         function markColorAsFailed(playerIdx, tileId) {
-            if (!playerFailedColors[playerIdx]) {
-                playerFailedColors[playerIdx] = new Set();
-            }
-            playerFailedColors[playerIdx].add(tileId);
+            playerFailedColor[playerIdx] = tileId; // Marque cette couleur comme échouée (bloquée temporairement)
             renderTiles();
         }
 
@@ -552,7 +538,7 @@
                 <!-- Easy Mode (QCM aléatoire) -->
                 <div id="easyOptionsArea" class="flex flex-col gap-1.5 hidden"></div>
 
-                <!-- Hard Mode (Niveau compliqué : Choix parmi les 15 options de réponses) -->
+                <!-- Hard Mode (Choix parmi les 15 options) -->
                 <div id="hardInputArea" class="flex flex-col gap-2 hidden">
                     <div class="flex flex-col gap-2">
                         <select id="hardSelectAnswer" class="w-full bg-[#2D5766] border border-[#417E94] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-[#65C3E6]">
