@@ -47,7 +47,7 @@
 
         let selectedPlayerIndex = null;
         let selectedTileId = null;
-        let gameData = { count: 5, colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' }, difficulty: 'easy' };
+        let gameData = { count: 5, colors: { 1: 'purple', 2: 'blue', 3: 'green', 4: 'red', 5: 'yellow' }, names: {}, difficulty: 'easy' };
 
         /**
          * Initialize App Data safely
@@ -87,11 +87,12 @@
             for (let i = 1; i <= totalPlayers; i++) {
                 const colorId = (gameData.colors && gameData.colors[i]) || COLOR_OPTIONS[(i - 1) % COLOR_OPTIONS.length].id;
                 const colorObj = COLOR_OPTIONS.find(c => c.id === colorId) || COLOR_OPTIONS[0];
+                const playerName = (gameData.names && gameData.names[i]) ? gameData.names[i] : `Joueur ${i}`;
 
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.id = `player-card-${i}`;
-                btn.onclick = () => selectPlayer(i, colorObj);
+                btn.onclick = () => selectPlayer(i, colorObj, playerName);
                 btn.className = `player-btn flex-1 flex flex-col items-center justify-center p-2 rounded-xl border-2 border-[#417E94] bg-[#2D5766] hover:bg-[#417E94]/40 transition text-center cursor-pointer shadow-md group`;
 
                 btn.innerHTML = `
@@ -101,7 +102,7 @@
                             <i class="fa-solid fa-xmark text-base"></i>
                         </div>
                     </div>
-                    <span class="text-xs font-extrabold text-white group-hover:text-[#65C3E6] truncate w-full">Joueur ${i}</span>
+                    <span class="text-xs font-extrabold text-white group-hover:text-[#65C3E6] truncate w-full">${playerName}</span>
                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${colorObj.bgClass} text-white shadow-sm mt-0.5">${colorObj.name}</span>
                 `;
 
@@ -112,7 +113,7 @@
         /**
          * Handle Player Selection - Opens the "Quelle case ?" section
          */
-        function selectPlayer(index, colorObj) {
+        function selectPlayer(index, colorObj, playerName) {
             selectedPlayerIndex = index;
             selectedTileId = null;
 
@@ -130,7 +131,7 @@
             // Update active player hint label
             const label = document.getElementById('selectedPlayerLabel');
             if (label) {
-                label.textContent = `Joueur ${index} (${colorObj.name})`;
+                label.textContent = `${playerName} (${colorObj.name})`;
             }
 
             // Unhide "Quelle case ?" section
@@ -219,11 +220,13 @@
                 }
             });
 
+            const playerName = (gameData.names && gameData.names[selectedPlayerIndex]) ? gameData.names[selectedPlayerIndex] : `Joueur ${selectedPlayerIndex}`;
+
             // Show/hide special revision notice if Multicouleur is clicked
             const multicolorNotice = document.getElementById('multicolorNotice');
             if (multicolorNotice) {
                 if (tile.id === 'multicolor') {
-                    multicolorNotice.textContent = `Joueur ${selectedPlayerIndex} peut réviser jusqu'à son prochain tour !`;
+                    multicolorNotice.textContent = `${playerName} peut réviser jusqu'à son prochain tour !`;
                     multicolorNotice.classList.remove('hidden');
                 } else {
                     multicolorNotice.classList.add('hidden');
@@ -235,7 +238,7 @@
             const summaryText = document.getElementById('actionSummaryText');
 
             if (actionPanel && summaryText) {
-                summaryText.innerHTML = `Joueur ${selectedPlayerIndex} sur case <span class="font-bold underline">${tile.name}</span> (${tile.category})`;
+                summaryText.innerHTML = `${playerName} sur case <span class="font-bold underline">${tile.name}</span> (${tile.category})`;
                 actionPanel.classList.remove('hidden');
                 actionPanel.classList.add('flex');
             }
@@ -286,7 +289,7 @@
                 <!-- Populated dynamically when Multicouleur is clicked -->
             </div>
 
-            <!-- Action summary panel (sans le bouton valider) -->
+            <!-- Action summary panel -->
             <div id="actionPanel" class="hidden flex-col gap-2 pt-1 border-t border-[#417E94]/60">
                 <div class="flex items-center justify-between gap-2">
                     <span id="actionSummaryText" class="text-xs text-slate-200 truncate"></span>
