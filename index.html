@@ -37,6 +37,7 @@
 
         let selectedPlayerCount = 0;
         let playerColors = {};
+        let selectedDifficulty = null;
 
         /**
          * Authentication Handler
@@ -229,21 +230,21 @@
          * Check if all players have selected unique colors
          */
         function validateColors() {
-            const startBtn = document.getElementById('startGameBtn');
+            const nextBtn = document.getElementById('toDifficultyBtn');
             const errWarn = document.getElementById('colorConflictWarning');
-            if (!startBtn || !errWarn) return;
+            if (!nextBtn || !errWarn) return;
 
             const chosen = Object.values(playerColors);
             const allSelected = chosen.length === selectedPlayerCount;
             const uniqueSelected = new Set(chosen).size === chosen.length;
 
             if (allSelected && uniqueSelected) {
-                startBtn.disabled = false;
-                startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                nextBtn.disabled = false;
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 errWarn.classList.add('hidden');
             } else {
-                startBtn.disabled = true;
-                startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                nextBtn.disabled = true;
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 if (allSelected && !uniqueSelected) {
                     errWarn.classList.remove('hidden');
                 } else {
@@ -253,13 +254,61 @@
         }
 
         /**
+         * Proceed to Difficulty Selection Screen
+         */
+        function goToDifficulty() {
+            selectedDifficulty = null;
+            updateDifficultyUI();
+            showScreen('difficultyScreen');
+        }
+
+        /**
+         * Select Difficulty Level
+         */
+        function selectDifficulty(level) {
+            selectedDifficulty = level;
+            updateDifficultyUI();
+        }
+
+        function updateDifficultyUI() {
+            const easyBtn = document.getElementById('diff-easy');
+            const hardBtn = document.getElementById('diff-hard');
+            const startBtn = document.getElementById('startGameBtn');
+
+            if (easyBtn && hardBtn) {
+                if (selectedDifficulty === 'easy') {
+                    easyBtn.className = "w-full p-4 rounded-2xl border-2 border-emerald-400 bg-[#1D3842] text-left transition cursor-pointer shadow-lg ring-2 ring-emerald-400/30";
+                    hardBtn.className = "w-full p-4 rounded-2xl border border-[#417E94] bg-[#1D3842]/70 hover:bg-[#417E94]/40 text-left transition cursor-pointer shadow-md";
+                } else if (selectedDifficulty === 'hard') {
+                    hardBtn.className = "w-full p-4 rounded-2xl border-2 border-amber-400 bg-[#1D3842] text-left transition cursor-pointer shadow-lg ring-2 ring-amber-400/30";
+                    easyBtn.className = "w-full p-4 rounded-2xl border border-[#417E94] bg-[#1D3842]/70 hover:bg-[#417E94]/40 text-left transition cursor-pointer shadow-md";
+                } else {
+                    easyBtn.className = "w-full p-4 rounded-2xl border border-[#417E94] bg-[#1D3842]/70 hover:bg-[#417E94]/40 text-left transition cursor-pointer shadow-md";
+                    hardBtn.className = "w-full p-4 rounded-2xl border border-[#417E94] bg-[#1D3842]/70 hover:bg-[#417E94]/40 text-left transition cursor-pointer shadow-md";
+                }
+            }
+
+            if (startBtn) {
+                if (selectedDifficulty) {
+                    startBtn.disabled = false;
+                    startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    startBtn.disabled = true;
+                    startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+        }
+
+        /**
          * Start the game once setup is complete
          */
         function startGame() {
+            if (!selectedDifficulty) return;
             const key = getAccessKey();
             localStorage.setItem('bg_helper_game_players', JSON.stringify({
                 count: selectedPlayerCount,
-                colors: playerColors
+                colors: playerColors,
+                difficulty: selectedDifficulty
             }));
 
             const playUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '') + '/play?key=' + encodeURIComponent(key);
@@ -352,7 +401,7 @@
                 <p class="text-sm text-slate-300">Sélectionnez le nombre de participants pour la partie.</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <!-- Option 2: 2 Joueurs -->
                 <button onclick="selectPlayerCount(2)" class="group bg-[#1D3842] hover:bg-[#417E94]/40 border border-[#417E94] hover:border-[#65C3E6] p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
                     <div class="flex items-center justify-center min-h-[4rem] relative w-24">
@@ -435,7 +484,7 @@
                 </button>
 
                 <!-- Option 5: 5 Joueurs -->
-                <button onclick="selectPlayerCount(5)" class="group bg-[#1D3842] hover:bg-[#417E94]/40 border border-[#417E94] hover:border-[#65C3E6] p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md sm:col-span-2 lg:col-span-1">
+                <button onclick="selectPlayerCount(5)" class="group bg-[#1D3842] hover:bg-[#417E94]/40 border border-[#417E94] hover:border-[#65C3E6] p-5 rounded-2xl transition flex flex-col items-center text-center gap-3 cursor-pointer shadow-md">
                     <div class="flex items-center justify-center min-h-[4rem] relative w-48">
                         <div class="w-8 h-8 flex items-center justify-center absolute -translate-x-11 -translate-y-0.5 rotate-0 transition group-hover:-translate-x-12">
                             <img src="assets/BLAB.svg" alt="Sprite Violet" class="w-8 h-8 object-contain drop-shadow" onerror="handleSpriteError(this)">
@@ -496,6 +545,57 @@
                     <i class="fa-solid fa-triangle-exclamation"></i> Chaque joueur doit avoir une couleur unique.
                 </p>
 
+                <button type="button" id="toDifficultyBtn" disabled onclick="goToDifficulty()"
+                    class="w-full py-3.5 bg-[#65C3E6] hover:bg-[#53A1BD] disabled:bg-[#1D3842] disabled:text-slate-600 disabled:cursor-not-allowed text-[#1D3842] font-bold rounded-xl transition shadow-lg shadow-[#65C3E6]/25 flex items-center justify-center gap-2">
+                    <span>Continuer</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== SCREEN 2.5: DIFFICULTY SELECTION ==================== -->
+        <section id="difficultyScreen" class="hidden w-full max-w-xl bg-[#2D5766] border border-[#417E94] rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+            <div class="flex items-center justify-between border-b border-[#417E94]/60 pb-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">Niveau de difficulté</h2>
+                    <p class="text-xs sm:text-sm text-slate-300">Choisissez le mode de jeu pour la partie.</p>
+                </div>
+                <button onclick="showScreen('colorSelectionScreen')" class="text-xs text-slate-300 hover:text-white border border-[#417E94] bg-[#1D3842] px-3 py-1.5 rounded-lg transition">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Retour
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Niveau Facile -->
+                <button type="button" id="diff-easy" onclick="selectDifficulty('easy')"
+                    class="w-full p-4 rounded-2xl border border-[#417E94] bg-[#1D3842]/70 hover:bg-[#417E94]/40 text-left transition cursor-pointer shadow-md">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                            <i class="fa-solid fa-seedling"></i> Niveau Facile
+                        </span>
+                        <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">QCM</span>
+                    </div>
+                    <p class="text-sm text-slate-300">
+                        Pour répondre aux questions, il faut choisir la bonne réponse parmi <strong class="text-white">3 choix proposés</strong>.
+                    </p>
+                </button>
+
+                <!-- Niveau Difficile -->
+                <button type="button" id="diff-hard" onclick="selectDifficulty('hard')"
+                    class="w-full p-4 rounded-2xl border border-[#417E94] bg-[#1D3842]/70 hover:bg-[#417E94]/40 text-left transition cursor-pointer shadow-md">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-fire"></i> Niveau Difficile
+                        </span>
+                        <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Saisie libre</span>
+                    </div>
+                    <p class="text-sm text-slate-300">
+                        Pour répondre aux questions, il faut <strong class="text-white">écrire soi-même les réponses</strong> sans propositions.
+                    </p>
+                </button>
+            </div>
+
+            <div class="pt-2">
                 <button type="button" id="startGameBtn" disabled onclick="startGame()"
                     class="w-full py-3.5 bg-[#65C3E6] hover:bg-[#53A1BD] disabled:bg-[#1D3842] disabled:text-slate-600 disabled:cursor-not-allowed text-[#1D3842] font-bold rounded-xl transition shadow-lg shadow-[#65C3E6]/25 flex items-center justify-center gap-2">
                     <span>Commencer la Partie</span>
