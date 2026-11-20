@@ -526,6 +526,12 @@
         }
 
         function markColorAsFailed(playerIdx, tileId) {
+            const successSet = playerSuccessColors[playerIdx] || new Set();
+            const remainingColors = COLOR_OPTIONS.filter(c => !successSet.has(c.id));
+            if (remainingColors.length <= 1) {
+                playerFailedColor[playerIdx] = null;
+                return;
+            }
             playerFailedColor[playerIdx] = tileId;
         }
 
